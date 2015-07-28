@@ -32,19 +32,12 @@ class Webui::ProjectController < Webui::WebuiController
   after_action :verify_authorized, :only => :save_new
 
   def index
-    unless params[:show_all]
-      params['excludefilter'] = 'home:'
-    end
+    @show_all = (params[:show_all].to_s == "true")
 
     @main_projects = []
     @excl_projects = []
-    if params['excludefilter'] and params['excludefilter'] != 'undefined'
-      @excludefilter = params['excludefilter']
-    else
-      @excludefilter = nil
-    end
     all_projects.each do |name, title|
-      if @excludefilter && name.start_with?(@excludefilter)
+      if !@show_all && name.start_with?("home:")
         @excl_projects << [name, title]
       else
         @main_projects << [name, title]
