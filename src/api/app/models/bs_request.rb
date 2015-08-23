@@ -116,28 +116,34 @@ class BsRequest < ActiveRecord::Base
   end
 
   def self.open_requests_for_source(obj)
-    query = BsRequest.order(:id).in_states([:new, :review, :declined])
+    BsRequest.order(:id).in_states([:new, :review, :declined]).
+      where(bs_request_actions: source_attributes_for_query(obj))
+  end
+
+  def self.source_attributes_for_query(object)
     if obj.kind_of? Project
-      query.where(bs_request_actions: {source_project: obj.name})
+      { source_project: obj.name }
     elsif obj.kind_of? Package
-      query.where(bs_request_actions: {source_project: obj.project.name, source_package: obj.name})
-    else
-      raise "Invalid object #{obj.class}"
+      { source_project: obj.project.name, source_package: obj.name }
     end
   end
 
   def self.open_requests_for_target(obj)
-    query = BsRequest.order(:id).in_states([:new, :review, :declined])
+    BsRequest.order(:id).in_states([:new, :review, :declined]).
+      where(bs_request_actions: target_attributes_for_query(obj))
+  end
+
+  def self.target_attributes_for_query(object)
     if obj.kind_of? Project
-      query.where(bs_request_actions: {target_project: obj.name})
+      { target_project: obj.name }
     elsif obj.kind_of? Package
-      query.where(bs_request_actions: {target_project: obj.project.name, target_package: obj.name})
-    else
-      raise "Invalid object #{obj.class}"
+      { target_project: obj.project.name, target_package: obj.name }
     end
   end
 
   def self.open_requests_for(obj)
+    raise "Invalid object #{obj.class}" unless obj.kind_of?(Project) || obj.kind_of?(Package)
+
     self.open_requests_for_target(obj) + self.open_requests_for_source(obj)
   end
 
