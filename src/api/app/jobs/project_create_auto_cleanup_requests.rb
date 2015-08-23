@@ -28,7 +28,7 @@ Such requests get not created for projects with open requests or if you remove t
     return if prj.nil? or prj.is_locked?
 
     # open requests do block the cleanup
-    return if BsRequest.open_requests_for(prj).length > 0
+    return if BsRequest.open_requests_for(prj).count > 0
 
     # check the time in project attribute
     time = nil
