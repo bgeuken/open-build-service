@@ -115,10 +115,7 @@ class BsRequest < ActiveRecord::Base
     Rails.cache.delete('xml_bs_request_%d' % id)
   end
 
-  def self.open_requests_for_source(obj)
-    BsRequest.order(:id).in_states([:new, :review, :declined]).
-      where(bs_request_actions: source_attributes_for_query(obj))
-  end
+  private
 
   def self.source_attributes_for_query(object)
     if obj.kind_of? Project
@@ -126,11 +123,6 @@ class BsRequest < ActiveRecord::Base
     elsif obj.kind_of? Package
       { source_project: obj.project.name, source_package: obj.name }
     end
-  end
-
-  def self.open_requests_for_target(obj)
-    BsRequest.order(:id).in_states([:new, :review, :declined]).
-      where(bs_request_actions: target_attributes_for_query(obj))
   end
 
   def self.target_attributes_for_query(object)
@@ -141,10 +133,16 @@ class BsRequest < ActiveRecord::Base
     end
   end
 
+  public
+
+  # Queries for BsRequests for packages or projects
   def self.open_requests_for(obj)
     raise "Invalid object #{obj.class}" unless obj.kind_of?(Project) || obj.kind_of?(Package)
 
-    self.open_requests_for_target(obj) + self.open_requests_for_source(obj)
+    query = BsRequest.order(:id).in_states([:new, :review, :declined])
+
+    query.where(bs_request_actions: target_attributes_for_query(obj)) +
+      query.where(bs_request_actions: source_attributes_for_query(obj))
   end
 
   def self.new_from_xml(xml)
