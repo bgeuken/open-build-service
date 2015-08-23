@@ -42,6 +42,11 @@ class BsRequest < ActiveRecord::Base
     where([SEARCHABLE_FIELDS.map { |field| "#{field} like ?" }.join(' or '),
            ["%#{search}%"] * SEARCHABLE_FIELDS.length].flatten)
   }
+  scope :open_requests_for_projects, ->(project) {
+    order(:id).in_states([:new, :review, :declined])
+      where(bs_request_actions: { target_project: project.name }).or.
+      where(bs_request_actions: { source_project: project.name })
+  }
 
   has_many :bs_request_actions, -> { includes([:bs_request_action_accept_info]) }, dependent: :destroy
   has_many :reviews, :dependent => :delete_all
@@ -113,16 +118,6 @@ class BsRequest < ActiveRecord::Base
     Rails.cache.delete('xml_bs_request_fullhistory_%d' % id)
     Rails.cache.delete('xml_bs_request_history_%d' % id)
     Rails.cache.delete('xml_bs_request_%d' % id)
-  end
-
-  # Queries for BsRequests for packages or projects
-  def self.open_requests_for(obj)
-    raise "Invalid object #{obj.class}" unless obj.kind_of?(Project)
-
-    query = BsRequest.order(:id).in_states([:new, :review, :declined])
-
-    query.where(bs_request_actions: { target_project: obj.name }) +
-      query.where(bs_request_actions: { source_project: obj.name })
   end
 
   def self.new_from_xml(xml)
