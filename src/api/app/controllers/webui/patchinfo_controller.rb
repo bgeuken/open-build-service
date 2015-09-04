@@ -4,7 +4,7 @@ class Webui::PatchinfoController < Webui::WebuiController
   before_filter :set_project, only: [
     :new_patchinfo, :updatepatchinfo, :edit_patchinfo, :show, :remove, :save
   ]
-  before_filter :get_binaries, only: [:new_patchinfo, :edit_patchinfo]
+  before_filter :get_binaries, only: [:new_patchinfo, :edit_patchinfo, :show]
   before_filter :require_exists, only: [:updatepatchinfo, :edit_patchinfo, :show, :save, :remove]
   before_filter :require_login, except: [:show]
 
@@ -193,7 +193,6 @@ class Webui::PatchinfoController < Webui::WebuiController
 
   ### Helper
 
-  private
 
   def read_patchinfo
     @binaries = Array.new
