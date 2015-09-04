@@ -1,9 +1,11 @@
 class Webui::PatchinfoController < Webui::WebuiController
   include Webui::WebuiHelper
   include Webui::PackageHelper
-  before_filter :set_project
-  before_filter :get_binaries, except: [:show, :delete]
-  before_filter :require_exists, except: [:new_patchinfo]
+  before_filter :set_project, only: [
+    :new_patchinfo, :updatepatchinfo, :edit_patchinfo, :show, :remove, :save
+  ]
+  before_filter :get_binaries, only: [:new_patchinfo, :edit_patchinfo]
+  before_filter :require_exists, only: [:updatepatchinfo, :edit_patchinfo, :show, :save, :remove]
   before_filter :require_login, except: [:show]
 
   def new_patchinfo
