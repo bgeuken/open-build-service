@@ -48,55 +48,6 @@ class Webui::PatchinfoController < Webui::WebuiController
     @packager = User.where(login: @packager).first
   end
 
-  def read_patchinfo
-    @binaries = Array.new
-    @file.each(:binary) do |binaries|
-      @binaries << binaries.text
-    end
-    @binary = []
-    @packager = @file.value(:packager)
-
-    if params[:issueid]
-      @issues = params[:issue].to_a << params[:issueid]
-    else
-      @issues = []
-      @file.each(:issue) do |a|
-        if a.text == ''
-          # old uploaded patchinfos could have broken tracker-names like "bnc "
-          # instead of "bnc". Catch these.
-          begin
-            a.text = get_issue_sum(a.value(:tracker), a.value(:id))
-          rescue ActiveXML::Transport::NotFoundError
-            a.text = 'PLEASE CHECK THE FORMAT OF THE ISSUE'
-          end
-        end
-
-        issueurl = IssueTracker.find_by_name(a.value(:tracker)).
-          try(:show_url_for, a.value(:id)).to_s
-
-        @issues << [
-          a.value(:tracker),
-          a.value(:id),
-          issueurl,
-          a.text
-        ]
-      end
-    end
-    @category = @file.value(:category)
-    @rating = @file.value(:rating)
-    @summary = @file.value(:summary)
-    @name = @file.value(:name)
-
-    @description = @file.value(:description)
-    @relogin = @file.has_element?('relogin_needed')
-    @reboot = @file.has_element?('reboot_needed')
-    @zypp_restart_needed = @file.has_element?('zypp_restart_needed')
-    if @file.has_element?('stopped')
-      @block = true
-      @block_reason = @file.value(:stopped)
-    end
-  end
-
   def save
     begin
       filename = '_patchinfo'
@@ -237,6 +188,60 @@ class Webui::PatchinfoController < Webui::WebuiController
     render_dialog
   end
 
+
+  ### Helper
+
+  private
+
+  def read_patchinfo
+    @binaries = Array.new
+    @file.each(:binary) do |binaries|
+      @binaries << binaries.text
+    end
+    @binary = []
+    @packager = @file.value(:packager)
+
+    if params[:issueid]
+      @issues = params[:issue].to_a << params[:issueid]
+    else
+      @issues = []
+      @file.each(:issue) do |a|
+        if a.text == ''
+          # old uploaded patchinfos could have broken tracker-names like "bnc "
+          # instead of "bnc". Catch these.
+          begin
+            a.text = get_issue_sum(a.value(:tracker), a.value(:id))
+          rescue ActiveXML::Transport::NotFoundError
+            a.text = 'PLEASE CHECK THE FORMAT OF THE ISSUE'
+          end
+        end
+
+        issueurl = IssueTracker.find_by_name(a.value(:tracker)).
+          try(:show_url_for, a.value(:id)).to_s
+
+        @issues << [
+          a.value(:tracker),
+          a.value(:id),
+          issueurl,
+          a.text
+        ]
+      end
+    end
+    @category = @file.value(:category)
+    @rating = @file.value(:rating)
+    @summary = @file.value(:summary)
+    @name = @file.value(:name)
+
+    @description = @file.value(:description)
+    @relogin = @file.has_element?('relogin_needed')
+    @reboot = @file.has_element?('reboot_needed')
+    @zypp_restart_needed = @file.has_element?('zypp_restart_needed')
+    if @file.has_element?('stopped')
+      @block = true
+      @block_reason = @file.value(:stopped)
+    end
+  end
+
   def valid_summary?(name)
     name && name.length > 10
   end
@@ -318,8 +323,6 @@ class Webui::PatchinfoController < Webui::WebuiController
       end
     end
   end
-
-  private
 
   def get_binaries
     @binarylist = []
