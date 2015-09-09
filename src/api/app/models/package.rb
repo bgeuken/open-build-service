@@ -85,11 +85,16 @@ class Package < ActiveRecord::Base
   has_many :tokens, dependent: :destroy, inverse_of: :package
 
 
+  def self.exists_on_backend?(project_name, package_name)
+    Package.get_by_project_and_name(project_name, package_name)
+    true
+  rescue Package::UnknownObjectError
+    false
+  end
 
   def self.check_access?(dbpkg = self)
-    return false if dbpkg.nil?
-    return false unless dbpkg.class == Package
-    return Project.check_access?(dbpkg.project)
+    dbpkg && dbpkg.class == Package &&
+      Project.check_access?(dbpkg.project)
   end
 
   def self.check_cache(project, package, opts)
@@ -163,6 +168,8 @@ class Package < ActiveRecord::Base
 
   def self.get_by_project_and_name!(project, package, opts = {})
     pkg = get_by_project_and_name(project, package, opts)
+    # FIXME: This means that get_by_project_and_name and
+    #        get_by_project_and_name! are identical
     raise UnknownObjectError, "#{project}/#{package}" unless pkg
     pkg
   end
