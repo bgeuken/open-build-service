@@ -117,13 +117,7 @@ module Minitest
     serial.map { |suite| suite.run reporter, options } +
       parallel.map { |suite| suite.run reporter, options }
   end
-  # we should fix this first ... unfortunatly there seems to be no way to repeat the last order
-  # to find out what went wrong and to validate it :(
-  def self.sort_order
-    :sorted
-  end
 end
-
 
 module ActionDispatch
   module Integration
