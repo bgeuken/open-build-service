@@ -52,9 +52,8 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
 
     get comments_request_path(id: 4)
     assert_response :success
-    assert_no_xml_tag tag: 'comment', attributes: { who: 'tom', parent: '300' }
+    assert_no_xml_tag tag: "comment[who=tom,parent=300]"
     assert_xml_tag tag: 'comment', attributes: { who: '_nobody_', id: '301' }, content: 'This comment has been deleted'
-
   end
 
   def test_delete_commented_package

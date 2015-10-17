@@ -978,7 +978,7 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     get '/source/home:tom:projectB/_meta'
     assert_response :success
     assert_xml_tag :tag => 'path', :attributes => { :project => 'home:tom:projectA' }
-    assert_no_xml_tag :tag => 'path', :attributes => { :project => 'home:tom:projecta' }
+    assert_no_xml_tag :tag => "path[project=home:tom:projecta]"
 
     # write again with a capital letter change
     put '/source/home:tom:projectB/_meta', "<project name='home:tom:projectB'> <title/> <description/> <repository name='repoB'> <path project='home:tom:projecta' repository='repoA' /> </repository> </project>"
@@ -987,7 +987,7 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     get '/source/home:tom:projectB/_meta'
     assert_response :success
     assert_xml_tag :tag => 'path', :attributes => { :project => 'home:tom:projectA' }
-    assert_no_xml_tag :tag => 'path', :attributes => { :project => 'home:tom:projecta' }
+    assert_no_xml_tag :tag => "path[project=home:tom:projecta]"
 
     # change back using remote project
     put '/source/home:tom:projectB/_meta', "<project name='home:tom:projectB'> <title/> <description/> <repository name='repoB'> <path project='RemoteInstance:home:tom:projectA' repository='repoA' /> </repository> </project>"
@@ -995,7 +995,7 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     get '/source/home:tom:projectB/_meta'
     assert_response :success
     assert_xml_tag :tag => 'path', :attributes => { :project => 'RemoteInstance:home:tom:projectA' }
-    assert_no_xml_tag :tag => 'path', :attributes => { :project => 'RemoteInstance:home:tom:projecta' }
+    assert_no_xml_tag :tag => "path[project=RemoteInstance:home:tom:projecta]"
 
     if $ENABLE_BROKEN_TEST
 # FIXME: the case insensitive database select is not okay.
@@ -1006,7 +1006,7 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
       get '/source/home:tom:projectB/_meta'
       assert_response :success
       assert_xml_tag :tag => 'path', :attributes => { :project => 'RemoteInstance:home:tom:projectA' }
-      assert_no_xml_tag :tag => 'path', :attributes => { :project => 'RemoteInstance:home:tom:projecta' }
+      assert_no_xml_tag :tag => "path[project=RemoteInstance:home:tom:projecta]"
     end
 
     # cleanup
@@ -2142,9 +2142,9 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     get '/source/home:adrian:branches:home:adrian:TEMP/_meta'
     assert_response :success
     assert_xml_tag(:tag => 'repository', :attributes => {name:"BaseDistro_repo"})
-    assert_no_xml_tag(:tag => 'repository', :attributes => {name:"repo1"})
-    assert_no_xml_tag(:tag => 'repository', :attributes => {name:"repo2"})
-    assert_no_xml_tag(:tag => 'repository', :attributes => {name:"repo3"})
+    assert_no_xml_tag(:tag => "repository[name=repo1]")
+    assert_no_xml_tag(:tag => "repository[name=repo2]")
+    assert_no_xml_tag(:tag => "repository[name=repo3]")
     delete '/source/home:adrian:branches:home:adrian:TEMP'
     assert_response :success
     delete "/source/home:adrian:TEMP/_attribute/OBS:BranchRepositoriesFromProject"
@@ -2160,9 +2160,9 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     get '/source/home:adrian:branches:home:adrian:TEMP/_meta'
     assert_response :success
-    assert_no_xml_tag(:tag => 'repository', :attributes => {name:"repo1"})
+    assert_no_xml_tag(:tag => "repository[name=repo1]")
     assert_xml_tag(:tag => 'repository', :attributes => {name:"repo2"})
-    assert_no_xml_tag(:tag => 'repository', :attributes => {name:"repo3"})
+    assert_no_xml_tag(:tag => "repository[name=repo3]")
     delete '/source/home:adrian:branches:home:adrian:TEMP'
     assert_response :success
     # again as maintenance branch
@@ -2170,9 +2170,9 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     get '/source/home:adrian:branches:home:adrian:TEMP/_meta'
     assert_response :success
-    assert_no_xml_tag(:tag => 'repository', :attributes => {name:"home_adrian_TEMP_repo1"})
+    assert_no_xml_tag(:tag => "repository[name=home_adrian_TEMP_repo1]")
     assert_xml_tag(:tag => 'repository', :attributes => {name:"home_adrian_TEMP_repo2"})
-    assert_no_xml_tag(:tag => 'repository', :attributes => {name:"home_adrian_TEMP_repo3"})
+    assert_no_xml_tag(:tag => "repository[name=home_adrian_TEMP_repo3]")
     delete '/source/home:adrian:branches:home:adrian:TEMP'
     assert_response :success
 
@@ -2425,7 +2425,7 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_xml_tag :tag => 'binarylist', :children => { :count => 4 }
     # binary got  renamed during release
-    assert_no_xml_tag :tag => 'binary', :attributes => { :filename => 'package-1.0-1.i586.rpm' }
+    assert_no_xml_tag :tag => "binary[filename=package-1.0-1.i586.rpm]"
     assert_xml_tag :tag => 'binary', :attributes => { :filename => 'package-1.0-Beta1.i586.rpm' }
 
     # cleanup
@@ -2534,7 +2534,7 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     get '/source/home:fred:COPY/_meta'
     assert_response :success
-    assert_no_xml_tag :tag => 'person', :attributes => { :userid => 'Iggy' }
+    assert_no_xml_tag :tag => "person[userid=Iggy]"
     assert_xml_tag :tag => 'person', :attributes => { :userid => 'fred', :role => 'maintainer' }
     copy = @response.body
     # almost everything must be identical
@@ -2806,7 +2806,7 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     # check backend functionality
     get '/source/kde4/temporary'
     assert_response :success
-    assert_no_xml_tag(:tag => 'entry', :attributes => { :name => 'my_file' })
+    assert_no_xml_tag(:tag => "entry[name=my_file]")
     assert_xml_tag(:tag => 'entry', :attributes => { :name => 'file_in_linked_package' })
     assert_xml_tag(:tag => 'entry', :attributes => { :name => '_link' })
     assert_xml_tag(:tag => 'linkinfo', :attributes => { :project => 'UseRemoteInstance', :package => 'pack1',
@@ -2816,13 +2816,13 @@ class SourceControllerTest < ActionDispatch::IntegrationTest
     assert_xml_tag(:tag => 'entry', :attributes => { :name => 'my_file' })
     assert_xml_tag(:tag => 'entry', :attributes => { :name => 'file_in_linked_package' })
     assert_xml_tag(:tag => 'linkinfo', :attributes => { :project => 'kde4', :package => 'temporary' })
-    assert_no_xml_tag(:tag => 'entry', :attributes => { :name => '_link' })
+    assert_no_xml_tag(:tag => "entry[name=_link]")
     get '/source/TEMPORARY/temporary2?expand=1'
     assert_response :success
     assert_xml_tag(:tag => 'entry', :attributes => { :name => 'my_file' })
     assert_xml_tag(:tag => 'entry', :attributes => { :name => 'file_in_linked_package' })
     assert_xml_tag(:tag => 'linkinfo', :attributes => { :project => 'kde4', :package => 'temporary2' })
-    assert_no_xml_tag(:tag => 'entry', :attributes => { :name => '_link' })
+    assert_no_xml_tag(:tag => "entry[name=_link]")
 
     # cleanup
     delete '/source/kde4/temporary'

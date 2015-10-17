@@ -509,9 +509,12 @@ module ActionDispatch
     end
 
     def assert_no_xml_tag(conds)
-      node = ActiveXML::Node.new(@response.body)
-      ret = node.find_matching(NodeMatcher::Conditions.new(conds))
-      raise MiniTest::Assertion.new("expected no tag, but found tag matching #{conds.inspect} in:\n#{node.dump_xml}") if ret
+      if conds[:attributes]
+        conds[:attributes].merge!(count: 0)
+      else
+        conds[:attributes] = { count: 0 }
+      end
+      assert_xml_tag(conds)
     end
 
     # useful to fix our test cases
