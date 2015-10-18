@@ -486,35 +486,28 @@ module ActionDispatch
         raise MiniTest::Assertion.new("Expected a Hash, got a #{conds.class}")
       end
 
+      cmd = [conds[:tag]]
+
       if conds[:attributes]
-        if conds.has_key?(:content)
-          conds[:attributes].update(text: conds[:content])
-        end
-        if conds[:children]
-          assert_select conds[:tag], conds[:attributes] do
-            assert_xml_tag(conds[:children])
-          end
-        else
-          # NOTE: assert_select has trouble to differentiate between :count attributes
-          #       and :count as assert_select equality test
-          assert_select conds[:tag], conds[:attributes]
+        conds[:attributes].update(text: conds[:content]) if conds.has_key?(:content)
+        cmd << conds[:attributes]
+      else
+        cmd << conds[:content] if conds[:content]
+      end
+
+      cmd << conds[:count] if conds[:count]
+
+      if conds[:children]
+        assert_select *cmd do
+          assert_select conds[:children]
         end
       else
-        if conds[:content]
-          assert_select conds[:tag], conds[:content]
-        else
-          assert_select conds[:tag]
-        end
+        assert_select *cmd
       end
     end
 
     def assert_no_xml_tag(conds)
-      if conds[:attributes]
-        conds[:attributes].merge!(count: 0)
-      else
-        conds[:attributes] = { count: 0 }
-      end
-      assert_xml_tag(conds)
+      assert_xml_tag(conds.update(count: 0))
     end
 
     # useful to fix our test cases
