@@ -20,10 +20,10 @@ class AttributeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     # only one entry ATM - will have to be adopted, lists namespaces
-    count = 2
-    assert_xml_tag :tag => 'directory', :attributes => { :count => count }
-    assert_xml_tag :children => { :count => count }
-    assert_xml_tag :child => { :tag => 'entry', :attributes => { :name => "NSTEST" } }
+    assert_select "directory[count=2]" do
+      assert_select "entry", 2
+      assert_select "entry", { :name => "NSTEST" }, 1
+    end
   end
 
   def test_namespace_index
@@ -34,20 +34,21 @@ class AttributeControllerTest < ActionDispatch::IntegrationTest
 
     get "/attribute/OBS"
     assert_response :success
-    count = 21
-    assert_xml_tag :tag => 'directory', :attributes => { :count => count }
-    assert_xml_tag :children => { :count => count }
-    assert_xml_tag :child => { :tag => 'entry', :attributes => { :name => "Maintained" } }
+    assert_select "directory[count=21]" do
+      assert_select "entry", 21
+      assert_select "entry", { :name => "Maintained" }, 1
+    end
   end
 
   def test_namespace_meta
     login_Iggy
     get "/attribute/OBS/UpdateProject/_meta"
     assert_response :success
-    assert_xml_tag :tag => 'definition', :attributes => { :name => "UpdateProject", :namespace => "OBS" }
-    assert_xml_tag :child => { :tag => 'modifiable_by', :attributes => { :user => "maintenance_coord" } }
-    assert_xml_tag :child => { :tag => 'count', :content => "1" }
-    assert_xml_tag :child => { :tag => 'description', :content => "Project is frozen and updates are released via the other project" }
+    assert_select "definition", { :name => "UpdateProject", :namespace => "OBS" } do
+      assert_select "modifiable_by", { :user => "maintenance_coord" }
+      assert_select "count", "1"
+      assert_select "description", "Project is frozen and updates are released via the other project"
+    end
   end
 
   def test_create_namespace
@@ -210,10 +211,12 @@ ription</description>
     assert_response :success
     get "/source/home:adrian/_attribute/TEST:Dummy"
     assert_response :success
-    assert_no_xml_tag :parent => { :tag => 'attribute', :attributes => { :name => "Dummy", :namespace => "TEST" } },
-                   :tag => 'issue', :attributes => { :name => "123", :tracker => "bnc" }
-    assert_xml_tag :parent => { :tag => 'attribute', :attributes => { :name => "Dummy", :namespace => "TEST" } },
-                   :tag => 'issue', :attributes => { :name => "456", :tracker => "bnc" }
+    assert_select "attributes" do
+      assert_select "attribute", { :name => "Dummy", :namespace => "TEST" } do
+        assert_select "issue", { :name => "123", :tracker => "bnc" }, 0
+        assert_select "issue", { :name => "456", :tracker => "bnc" }, 1
+      end
+    end
 
     # cleanup
     delete "/attribute/TEST/Dummy/_meta"
@@ -227,10 +230,10 @@ ription</description>
 
     get "/attribute/OBS"
     assert_response :success
-    count = 21
-    assert_xml_tag :tag => 'directory', :attributes => { :count => count }
-    assert_xml_tag :children => { :count => count }
-    assert_xml_tag :child => { :tag => 'entry', :attributes => { :name => "Maintained" } }
+    assert_select "directory[count=21]" do
+      assert_select "entry", 21
+      assert_select "entry", { :name => "Maintained" }, 1
+    end
   end
 
   def test_invalid_get

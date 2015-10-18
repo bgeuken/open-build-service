@@ -479,10 +479,33 @@ module ActionDispatch
       load_fixture("backend/#{path}")
     end
 
+    # Wrapper around assert_select for keeping existing calls of 'assert_xml_tag'
+    # NOTE: Please directly use assert_select when writing new test assertions
     def assert_xml_tag(conds)
-      node = ActiveXML::Node.new(@response.body)
-      ret = node.find_matching(NodeMatcher::Conditions.new(conds))
-      raise MiniTest::Assertion.new("expected tag, but no tag found matching #{conds.inspect} in:\n#{node.dump_xml}") unless ret
+      unless conds.is_a?(Hash)
+        raise MiniTest::Assertion.new("Expected a Hash, got a #{conds.class}")
+      end
+
+      if conds[:attributes]
+        if conds.has_key?(:content)
+          conds[:attributes].update(text: conds[:content])
+        end
+        if conds[:children]
+          assert_select conds[:tag], conds[:attributes] do
+            assert_xml_tag(conds[:children])
+          end
+        else
+          # NOTE: assert_select has trouble to differentiate between :count attributes
+          #       and :count as assert_select equality test
+          assert_select conds[:tag], conds[:attributes]
+        end
+      else
+        if conds[:content]
+          assert_select conds[:tag], conds[:content]
+        else
+          assert_select conds[:tag]
+        end
+      end
     end
 
     def assert_no_xml_tag(conds)
