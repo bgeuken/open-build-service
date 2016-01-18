@@ -1,4 +1,7 @@
 class Webui::PatchinfoController < Webui::WebuiController
+
+  require 'patchinfo'
+
   include Webui::WebuiHelper
   include Webui::PackageHelper
   before_filter :set_project
