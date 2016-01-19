@@ -170,7 +170,7 @@ class Webui::ProjectController < Webui::WebuiController
         end
         flash[:success] = "Created maintenance release request " +
                           "<a href='#{url_for(:controller => 'request', :action => 'show', :id => req.id)}'>#{req.id}</a>"
-      rescue Patchinfo::IncompletePatchinfo,
+      rescue OldPatchinfo::IncompletePatchinfo,
              BsRequestAction::UnknownProject,
              BsRequestAction::BuildNotFinished,
              BsRequestActionMaintenanceRelease::RepositoryWithoutReleaseTarget,

@@ -13,7 +13,7 @@ class Webui::PatchinfoController < Webui::WebuiController
     end
 
     unless @project.exists_package? 'patchinfo'
-      unless Patchinfo.new.create_patchinfo(@project.name, nil)
+      unless OldPatchinfo.new.create_patchinfo(@project.name, nil)
         flash[:error] = 'Error creating patchinfo'
         redirect_to controller: 'project', action: 'show', project: @project and return
       end
@@ -32,7 +32,7 @@ class Webui::PatchinfoController < Webui::WebuiController
   def updatepatchinfo
     authorize @project, :update?
 
-    Patchinfo.new.cmd_update_patchinfo(params[:project], params[:package])
+    OldPatchinfo.new.cmd_update_patchinfo(params[:project], params[:package])
     redirect_to action: 'edit_patchinfo', project: @project, package: @package
   end
 

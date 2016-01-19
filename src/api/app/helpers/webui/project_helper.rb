@@ -88,11 +88,11 @@ module Webui::ProjectHelper
   end
 
   def patchinfo_rating_color(rating)
-    Patchinfo::RATING_COLORS[rating.to_s] || ''
+    OldPatchinfo::RATING_COLORS[rating.to_s] || ''
   end
 
   def patchinfo_category_color(category)
-    Patchinfo::CATEGORY_COLORS[category.to_s] || ''
+    OldPatchinfo::CATEGORY_COLORS[category.to_s] || ''
   end
 
   def incident_issue_color(patchinfo_issues, package_issues)

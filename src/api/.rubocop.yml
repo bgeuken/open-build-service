@@ -5,6 +5,7 @@ AllCops:
     - 'tmp/**/*'
     - 'lib/templates/**/*'
     - 'vendor/bundle/**/*'
+    - 'app/models/old_patchinfo.rb'
 
 # Someday we should add copyrights
 Style/Copyright:

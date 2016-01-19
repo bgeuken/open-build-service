@@ -2,7 +2,7 @@
 # in a update package
 
 # if you wonder it's not a module, read http://blog.codeclimate.com/blog/2012/11/14/why-ruby-class-methods-resist-refactoring
-class Patchinfo < ActiveXML::Node
+class OldPatchinfo < ActiveXML::Node
   include ValidationHelper
 
   class PatchinfoFileExists < APIException; end

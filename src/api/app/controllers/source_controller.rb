@@ -1191,13 +1191,13 @@ class SourceController < ApplicationController
     # a new_format argument may be given but we don't support the old (and experimental marked) format
     # anymore
 
-    render_ok data: Patchinfo.new.create_patchinfo(params[:project], params[:name],
-                                                   comment: params[:comment], force: params[:force])
+    render_ok data: OldPatchinfo.new.create_patchinfo(params[:project], params[:name],
+                                                      comment: params[:comment], force: params[:force])
   end
 
   # POST /source/<project>/<package>?cmd=updatepatchinfo
   def package_command_updatepatchinfo
-    Patchinfo.new.cmd_update_patchinfo(params[:project], params[:package])
+    OldPatchinfo.new.cmd_update_patchinfo(params[:project], params[:package])
     render_ok
   end
 

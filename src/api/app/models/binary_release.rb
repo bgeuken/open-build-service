@@ -87,7 +87,7 @@ class BinaryRelease < ActiveRecord::Base
         end
         if binary["patchinforef"]
           begin
-            pi = Patchinfo.new(Suse::Backend.get("/source/#{binary["patchinforef"]}/_patchinfo").body)
+            pi = OldPatchinfo.new(Suse::Backend.get("/source/#{binary["patchinforef"]}/_patchinfo").body)
           rescue ActiveXML::Transport::NotFoundError
             # patchinfo disappeared meanwhile
           end

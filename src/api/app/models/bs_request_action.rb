@@ -690,7 +690,7 @@ class BsRequestAction < ActiveRecord::Base
     newPackages.each do |pkg|
       releaseTargets=nil
       if pkg.is_patchinfo?
-        releaseTargets = Patchinfo.new.fetch_release_targets(pkg)
+        releaseTargets = OldPatchinfo.new.fetch_release_targets(pkg)
       end
       newTargets.each do |p|
         unless releaseTargets.blank?

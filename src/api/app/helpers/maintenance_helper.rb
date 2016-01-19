@@ -221,7 +221,7 @@ module MaintenanceHelper
     return nil unless sourcePackage.is_patchinfo?
 
     # check for patch name inside of _patchinfo file
-    xml = Patchinfo.new.read_patchinfo_xmlhash(sourcePackage)
+    xml = OldPatchinfo.new.read_patchinfo_xmlhash(sourcePackage)
     e = xml.elements("name")
     patchName = e ? e.first : ""
 

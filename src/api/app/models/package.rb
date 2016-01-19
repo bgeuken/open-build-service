@@ -458,7 +458,7 @@ class Package < ActiveRecord::Base
   def update_issue_list
     current_issues = {}
     if self.is_patchinfo?
-      xml = Patchinfo.new.read_patchinfo_xmlhash(self)
+      xml = OldPatchinfo.new.read_patchinfo_xmlhash(self)
       xml.elements('issue') do |i|
         begin
           current_issues['kept'] ||= []
@@ -1141,7 +1141,7 @@ class Package < ActiveRecord::Base
 
   def patchinfo
     begin
-      Patchinfo.new(self.source_file('_patchinfo'))
+      OldPatchinfo.new(self.source_file('_patchinfo'))
     rescue ActiveXML::Transport::NotFoundError
       nil
     end
@@ -1268,7 +1268,7 @@ class Package < ActiveRecord::Base
       Channel.verify_xml!(content)
     end
     if name == '_patchinfo'
-      Patchinfo.new.verify_data(pkg.project, content)
+      OldPatchinfo.new.verify_data(pkg.project, content)
     end
     if name == '_attribute'
       raise IllegalFileName
