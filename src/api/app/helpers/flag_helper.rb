@@ -4,11 +4,9 @@ module FlagHelper
   end
 
   def type_flags(type)
-    ret = []
-    flags.each do |f|
-      ret << f if f.flag == type
+    flags.select do |flag|
+      flag.flag == type
     end
-    return ret
   end
 
   TYPES = {
