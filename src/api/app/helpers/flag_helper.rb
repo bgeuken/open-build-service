@@ -140,15 +140,15 @@ module FlagHelper
   end
 
   def find_flag_state(flag_type, repo, arch)
-    state = :default
-
     flags = self.flags.flags_of_type(flag_type).select do |flag|
       flag.is_relevant_for?(repo, arch)
     end
 
-    flags.sort! { |a, b| a.specifics <=> b.specifics }
-    flags.each do |flag|
+    flag = flags.sort { |a, b| a.specifics <=> b.specifics }.last
+    if flag
       state = flag.status
+    else
+      state = :default
     end
 
     if state == :default
