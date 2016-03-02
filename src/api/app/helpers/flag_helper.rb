@@ -3,26 +3,16 @@ module FlagHelper
     setup 'invalid_flag'
   end
 
-  TYPES = {
-    'lock'           => :disable,
-    'build'          => :enable,
-    'publish'        => :enable,
-    'debuginfo'      => :disable,
-    'useforbuild'    => :enable,
-    'binarydownload' => :enable,
-    'sourceaccess'   => :enable,
-    'access'         => :enable
-  }
   def self.default_for(flag_type)
-    return TYPES[flag_type.to_s].to_s
+    return Flag::TYPES[flag_type.to_s].to_s
   end
 
   def self.flag_types
-    TYPES.keys
+    Flag::TYPES.keys
   end
 
   def validate_type( flag )
-    unless TYPES.has_key? flag.to_s
+    unless Flag::TYPES.has_key? flag.to_s
       raise InvalidFlag.new( "Error: unknown flag type '#{flag}' not found." )
     end
   end
