@@ -983,7 +983,7 @@ class Project < ActiveRecord::Base
 
     repos = repositories.not_remote
 
-    FlagHelper.flag_types.each do |flag_name|
+    Flag::TYPES.each do |flag_name|
       pkg_flags = nil
       flaglist = self.flags.flags_of_type(flag_name)
       pkg_flags = pkg.flags_of_type(flag_name) if pkg

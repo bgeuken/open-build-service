@@ -8,7 +8,7 @@ xml.package(name: my_model.name, project: my_model.project.name) do
 
   my_model.render_relationships(xml)
 
-  FlagHelper.flag_types.each do |flag_name|
+  Flag::TYPES.each do |flag_name|
     flaglist = my_model.flags.flags_of_type(flag_name)
     xml.send(flag_name) do
       flaglist.each do |flag|

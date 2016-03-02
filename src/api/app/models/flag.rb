@@ -1,6 +1,6 @@
 class Flag < ActiveRecord::Base
 
-  TYPES = {
+  TYPES_MAP = {
     'lock'           => :disable,
     'build'          => :enable,
     'publish'        => :enable,
@@ -10,6 +10,8 @@ class Flag < ActiveRecord::Base
     'sourceaccess'   => :enable,
     'access'         => :enable
   }
+
+  TYPES = TYPES_MAP.keys
 
   belongs_to :project, inverse_of: :flags
   belongs_to :package, inverse_of: :flags
@@ -37,7 +39,7 @@ class Flag < ActiveRecord::Base
   def validate_custom_save
     errors.add(:name, 'Please set either project or package.') if self.project.nil? and self.package.nil?
     errors.add(:name, 'Please set either project or package.') unless self.project.nil? or self.package.nil?
-    errors.add(:flag, 'There needs to be a valid flag.') unless TYPES.has_key?(self.flag.to_s)
+    errors.add(:flag, 'There needs to be a valid flag.') unless TYPES.include?(self.flag.to_s)
     # rubocop:disable Metrics/LineLength
     errors.add(:status, 'Status needs to be enable or disable') unless (self.status && (self.status.to_sym == :enable or self.status.to_sym == :disable))
     # rubocop:enable Metrics/LineLength

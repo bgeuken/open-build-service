@@ -4,15 +4,11 @@ module FlagHelper
   end
 
   def self.default_for(flag_type)
-    return Flag::TYPES[flag_type.to_s].to_s
-  end
-
-  def self.flag_types
-    Flag::TYPES.keys
+    return Flag::TYPES_MAP[flag_type.to_s].to_s
   end
 
   def validate_type( flag )
-    unless Flag::TYPES.has_key? flag.to_s
+    unless Flag::TYPES_MAP.has_key? flag.to_s
       raise InvalidFlag.new( "Error: unknown flag type '#{flag}' not found." )
     end
   end
@@ -21,7 +17,7 @@ module FlagHelper
     Flag.transaction do
       self.flags.delete_all
       position = 1
-      FlagHelper.flag_types.each do |flagtype|
+      Flag::TYPES.each do |flagtype|
         position = update_flags( xmlhash, flagtype, position )
       end
     end
