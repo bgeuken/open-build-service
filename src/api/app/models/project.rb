@@ -983,11 +983,11 @@ class Project < ActiveRecord::Base
 
     repos = repositories.not_remote
 
-    Flag::TYPES.each do |flag_name|
+    Flag::TYPES_MAP.each do |flag_name, default_state|
       pkg_flags = nil
       flaglist = self.flags.flags_of_type(flag_name)
       pkg_flags = pkg.flags_of_type(flag_name) if pkg
-      flag_default = FlagHelper.default_for(flag_name)
+      flag_default = default_state.to_s
       archs = Array.new
       flagret = Array.new
       unless %w(lock access sourceaccess).include?(flag_name)

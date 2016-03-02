@@ -3,10 +3,6 @@ module FlagHelper
     setup 'invalid_flag'
   end
 
-  def self.default_for(flag_type)
-    return Flag::TYPES_MAP[flag_type.to_s].to_s
-  end
-
   def validate_type( flag )
     unless Flag::TYPES_MAP.has_key? flag.to_s
       raise InvalidFlag.new( "Error: unknown flag type '#{flag}' not found." )
@@ -142,7 +138,7 @@ module FlagHelper
         logger.debug 'flagcheck: package has default state, checking project'
         state = self.project.find_flag_state(flag_type, repo, arch)
       else
-        state = FlagHelper.default_for(flag_type)
+        state = Flag::TYPES_MAP[flag_type.to_sym].to_s
       end
     end
 
