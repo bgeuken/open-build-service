@@ -54,8 +54,6 @@
               <%= link_to('Release repository', {:action => :release_repository_dialog, :project => @project, :repository => repository.name}, :remote => true) %>
           <% end %>
         </div>
-
-        <%= render :partial => 'webui/download_on_demand/index', :locals => {project: @project, repository: repository, repository_id: repository_id, new_download_on_demand: DownloadRepository.new(repository_id: repository.id)}%>
       </div>
     </div>
 <% end %>
