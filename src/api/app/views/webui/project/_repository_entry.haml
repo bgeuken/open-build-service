@@ -1,5 +1,4 @@
-- repository_id = valid_xml_id(repository.name)
-%div{ id: repository_id, style: "margin-bottom: 1.5em" }
+%div{ style: "margin-bottom: 1.5em" }
   %div{ style: "margin-left: 15px" }
     %strong
       = link_to(repository.name, :action => 'repository_state', :project => @project, :repository => repository.name)
