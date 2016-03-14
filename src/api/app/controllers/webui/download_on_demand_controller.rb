@@ -37,6 +37,6 @@ class Webui::DownloadOnDemandController < Webui::WebuiController
   private
 
   def permitted_params
-    params.require(:download_repository).permit(:arch, :repotype, :url, :repository_id, :archfilter, :masterurl, :mastersslfingerprint, :pubkey)
+    params.require(:dod_source).permit(:arch, :repotype, :url, :repository_id, :archfilter, :masterurl, :mastersslfingerprint, :pubkey)
   end
 end

@@ -621,20 +621,20 @@ class Project < ActiveRecord::Base
     current_repo = self.repositories.find_by_name(repo['name'])
 
     # sync download on demand config
-    download_repositories = []
+    dod_sources = []
     repo.elements('download').each do |xml_download|
-      download_repository = DownloadRepository.new(arch: xml_download['arch'],
+      dod_source = DODSource.new(arch: xml_download['arch'],
                     url: xml_download['url'],
                     repotype: xml_download['repotype'],
                     archfilter: xml_download['archfilter'],
                     pubkey: xml_download['pubkey'])
       if xml_download['master']
-         download_repository.masterurl = xml_download['master']['url']
-         download_repository.mastersslfingerprint = xml_download['master']['sslfingerprint']
+         dod_source.masterurl = xml_download['master']['url']
+         dod_source.mastersslfingerprint = xml_download['master']['sslfingerprint']
       end
-      download_repositories << download_repository
+      dod_sources << dod_source
     end
-    current_repo.download_repositories.replace(download_repositories)
+    current_repo.dod_sources.replace(dod_sources)
 
     # destroy all current pathelements
     current_repo.path_elements.destroy_all
@@ -1796,7 +1796,7 @@ class Project < ActiveRecord::Base
   end
 
   def has_remote_repositories?
-    self.repositories.any? { |r| r.download_repositories.any? }
+    self.repositories.any? { |r| r.dod_sources.any? }
   end
 
   def api_obj

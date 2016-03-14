@@ -37,16 +37,16 @@ xml.project(project_attributes) do
     params[:block] = repo.block if repo.block
     params[:linkedbuild] = repo.linkedbuild if repo.linkedbuild
     xml.repository(params) do |xml_repository|
-      repo.download_repositories.each do |download_repository|
-        params = {arch: download_repository.arch, url: download_repository.url, repotype: download_repository.repotype}
+      repo.dod_sources.each do |dod_source|
+        params = {arch: dod_source.arch, url: dod_source.url, repotype: dod_source.repotype}
         xml_repository.download(params) do |xml_download|
-          xml_download.archfilter download_repository.archfilter if download_repository.archfilter
-          unless download_repository.masterurl.blank?
-            params = {url: download_repository.masterurl}
-            params[:sslfingerprint] = download_repository.mastersslfingerprint
+          xml_download.archfilter dod_source.archfilter if dod_source.archfilter
+          unless dod_source.masterurl.blank?
+            params = {url: dod_source.masterurl}
+            params[:sslfingerprint] = dod_source.mastersslfingerprint
             xml_download.master(params)
           end
-          xml_download.pubkey download_repository.pubkey if download_repository.pubkey
+          xml_download.pubkey dod_source.pubkey if dod_source.pubkey
         end
       end
       repo.release_targets.each do |rt|

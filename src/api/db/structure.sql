@@ -443,7 +443,7 @@ CREATE TABLE `distributions` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE `download_repositories` (
+CREATE TABLE `dod_sources` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `repository_id` int(11) NOT NULL,
   `arch` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
@@ -455,7 +455,7 @@ CREATE TABLE `download_repositories` (
   `pubkey` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`),
   KEY `repository_id` (`repository_id`),
-  CONSTRAINT `download_repositories_ibfk_1` FOREIGN KEY (`repository_id`) REFERENCES `repositories` (`id`)
+  CONSTRAINT `dod_sources_ibfk_1` FOREIGN KEY (`repository_id`) REFERENCES `repositories` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE `event_subscriptions` (
@@ -1663,6 +1663,8 @@ INSERT INTO schema_migrations (version) VALUES ('20150903084813');
 INSERT INTO schema_migrations (version) VALUES ('20150916084813');
 
 INSERT INTO schema_migrations (version) VALUES ('20151030130011');
+
+INSERT INTO schema_migrations (version) VALUES ('20160314152233');
 
 INSERT INTO schema_migrations (version) VALUES ('21');
 

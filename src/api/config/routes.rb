@@ -61,7 +61,7 @@ OBSApi::Application.routes.draw do
       end
     end
 
-    resources :download_repositories, constraints: cons, only: [:create, :update, :destroy], controller: 'webui/download_on_demand'
+    resources :dod_sources, constraints: cons, only: [:create, :update, :destroy], controller: 'webui/download_on_demand'
 
     controller 'webui/configuration' do
       get 'configuration' => :index

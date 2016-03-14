@@ -1,5 +1,5 @@
-<div style="margin-top: 1em"><%= repository.download_repositories.empty? ? "No d" : "D" %>ownload on demand repositories
-  <% if User.current.is_admin? && repository.download_repositories.count != repository.architectures.count%>
+<div style="margin-top: 1em"><%= repository.dod_sources.empty? ? "No d" : "D" %>ownload on demand repositories
+  <% if User.current.is_admin? && repository.dod_sources.count != repository.architectures.count%>
     &nbsp;
     <span id="<%= "add_dod_repository_link_container_#{repository_id}" %>">
       <%= sprite_tag('drive_add') %>
@@ -16,7 +16,7 @@
     <% end -%>
   <% end -%>
   <ul style="list-style-type: none;">
-  <% repository.download_repositories.each do |dod_element| %>
+  <% repository.dod_sources.each do |dod_element| %>
     <li>
       <b><%= dod_element.arch %></b>:&nbsp;<a href="<%= dod_element.url %>" target="_blank" title="Go to the repository"><%= dod_element.url %></a>&nbsp;(<%= dod_element.repotype %>)
       <% if User.current.is_admin? %>
