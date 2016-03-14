@@ -52,6 +52,7 @@ class Project < ActiveRecord::Base
   has_many :attribs, :dependent => :destroy
 
   has_many :repositories, :dependent => :destroy, foreign_key: :db_project_id
+  has_many :dod_repositories, :class_name => "DODRepository", :dependent => :destroy, foreign_key: :db_project_id
   has_many :repository_architectures, -> { order("position") }, :dependent => :destroy, through: :repositories
   has_many :architectures, -> { order("position").distinct }, :through => :repository_architectures
 
@@ -1796,7 +1797,22 @@ class Project < ActiveRecord::Base
   end
 
   def has_remote_repositories?
-    self.repositories.any? { |r| r.dod_sources.any? }
+    self.dod_repositories.any?
+  end
+
+  def add_dod_repository!(repo_name, dod_attributes)
+    ActiveRecord::Base.transaction do
+      dod_repository = self.dod_repositories.find_by(name: repo_name)
+      dod_repository.add_dod_source!(dod_attributes)
+      self.store
+    end
+  end
+
+  def remove_dod_repository(repo_name)
+    ActiveRecord::Base.transaction do
+      self.dod_repositories.find_by(name: repo_name).destroy
+      self.store
+    end
   end
 
   def api_obj
