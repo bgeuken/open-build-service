@@ -30,5 +30,5 @@
       - if repository.release_targets.where(trigger: "manual").exists?
         = sprite_tag('flag_green')
         = link_to('Release repository', { :action => :release_repository_dialog, :project => @project, :repository => repository.name }, :remote => true)
-    = render :partial => 'webui/download_on_demand/index', :locals => {project: @project, repository: repository, repository_id: valid_xml_id(repository.name), new_download_on_demand: DownloadRepository.new(repository_id: repository.id)}
+    =# render :partial => 'webui/download_on_demand/index', :locals => {project: @project, repository: repository, repository_id: valid_xml_id(repository.name), new_download_on_demand: DownloadRepository.new(repository_id: repository.id)}
 
