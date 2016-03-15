@@ -25,6 +25,10 @@ class Repository < ActiveRecord::Base
     end
   end
 
+  def dod_sources
+    []
+  end
+
   def cleanup_before_destroy
     # change all linking repository pathes
     self.linking_repositories.each do |lrep|
