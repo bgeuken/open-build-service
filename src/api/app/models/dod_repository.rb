@@ -5,7 +5,8 @@ class DODRepository < Repository
   has_many :dod_sources, :dependent => :delete_all, foreign_key: :repository_id
 
   # DOD repos must have at least one DOD source
-  validates :dod_sources, presence: true
+#  validates :dod_sources, presence: true
+  validates :dod_sources, uniqueness: { scope: :arch }, presence: true
 
 #  after_destroy delete architectures needed?
 
