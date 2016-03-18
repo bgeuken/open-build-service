@@ -2,7 +2,7 @@ class DODRepository < Repository
   # NOTE that this is a sub class of Repository. Most associations and methods are
   #      defined there. Only add DOD specific things here.
 
-  has_many :dod_sources, :dependent => :delete_all, foreign_key: :repository_id
+  has_many :dod_sources, :dependent => :delete_all, :class_name => "DODSource", foreign_key: :repository_id
 
   # DOD repos must have at least one DOD source
 #  validates :dod_sources, presence: true
