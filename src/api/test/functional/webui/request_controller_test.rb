@@ -84,6 +84,7 @@ class Webui::RequestControllerTest < Webui::IntegrationTest
     # create testing superseded submission first
     login_tom to: package_show_path(project: 'Apache', package: 'apache2')
     click_link 'Submit package'
+    page.must_have_text('Do you want to submit package Apache / apache2 (revision 1)?')
     fill_in 'targetproject', with: 'kde4'
     fill_in 'description', with: 'I want to see his reaction'
     click_button 'Ok'
