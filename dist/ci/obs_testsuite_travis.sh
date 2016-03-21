@@ -39,6 +39,7 @@ if test -z "$SUBTEST"; then
       bundle exec rake rubocop
       bundle exec rake test:api
       bundle exec rake test:webui
+      cat tmp/capybara/*
       bundle exec rspec
       unset DO_COVERAGE
       bundle exec rake test:spider
