@@ -429,7 +429,6 @@ END
     end
 
     prj.dod_repositories
-binding.pry
     xml = prj.to_axml
     assert_xml_tag xml, :tag => :download, :attributes => {arch: "i586", url: "http://me.org", repotype: "rpmmd"}
     assert_xml_tag xml, :tag => :archfilter, :content => "i686,i586,noarch"

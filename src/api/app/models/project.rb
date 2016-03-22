@@ -620,15 +620,16 @@ class Project < ActiveRecord::Base
   end
 
   def update_one_repository_add_pathes(repo)
-    current_repo = if repo.elements('download')
-      self.dod_repositories.find_by_name(repo['name'])
+    if repo.elements('download')
+      current_repo = self.dod_repositories.find_by_name(repo['name'])
     else
-      self.repositories.find_by_name(repo['name'])
+      current_repo = self.repositories.find_by_name(repo['name'])
     end
 
     # sync download on demand config
     dod_sources = []
     repo.elements('download').each do |xml_download|
+      # FIXME: Edit existing DOD sources
       dod_source = DODSource.new(arch: xml_download['arch'],
                     url: xml_download['url'],
                     repotype: xml_download['repotype'],
@@ -640,7 +641,6 @@ class Project < ActiveRecord::Base
       end
       dod_sources << dod_source
     end
-binding.pry # dod ...
     current_repo.dod_sources.replace(dod_sources)
 
     # destroy all current pathelements
@@ -668,18 +668,10 @@ binding.pry # dod ...
     current_repo = @repocache[repo['name']]
     unless current_repo
       logger.debug "adding repository '#{repo['name']}'"
-      current_repo = if repo.elements('download')
-        self.dod_repositories.new(name: repo['name'])
-        dod_attributes = {
-          arch:       xml_download['arch'],
-          url:        xml_download['url'],
-          repotype:   xml_download['repotype'],
-          archfilter: xml_download['archfilter'],
-          pubkey:     xml_download['pubkey']
-        }
-        add_dod_repository!()
+      if repo.elements('download')
+        current_repo = self.dod_repositories.new(name: repo['name'])
       else
-        self.repositories.new(name: repo['name'])
+        current_repo = self.repositories.new(name: repo['name'])
       end
     end
     logger.debug "modifying repository '#{repo['name']}'"

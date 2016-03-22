@@ -6,7 +6,7 @@ class DODRepository < Repository
 
   # DOD repos must have at least one DOD source
 #  validates :dod_sources, presence: true
-  validates :dod_sources, uniqueness: { scope: :arch }, presence: true
+  validates :dod_sources, uniqueness: { scope: :arch } # , presence: true
 
 #  after_destroy delete architectures needed?
 
