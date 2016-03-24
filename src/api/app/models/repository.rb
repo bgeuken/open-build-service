@@ -285,20 +285,20 @@ class Repository < ActiveRecord::Base
   def update_download_repositories(xml_hash)
     return unless xml_hash["download"]
 
-    dod_repositories = []
-    xml_hash.elements("download").each do |xml_download|
-      download_repository = DownloadRepository.new(
+    dod_repositories = xml_hash.elements("download").map do |xml_download|
+      dod_attributes = {
         arch:       xml_download["arch"],
         url:        xml_download["url"],
         repotype:   xml_download["repotype"],
         archfilter: xml_download["archfilter"],
         pubkey:     xml_download["pubkey"]
-      )
+      }
       if xml_download["master"]
-         download_repository.masterurl = xml_download["master"]["url"]
-         download_repository.mastersslfingerprint = xml_download["master"]["sslfingerprint"]
+        dod_attributes[:masterurl]            = xml_download["master"]["url"]
+        dod_attributes[:mastersslfingerprint] = xml_download["master"]["sslfingerprint"]
       end
-      dod_repositories << download_repository
+
+      DownloadRepository.new(dod_attributes)
     end
 
     self.download_repositories.replace(dod_repositories)
