@@ -586,14 +586,15 @@ class Project < ActiveRecord::Base
 
   def update_repositories(xmlhash, force)
     fill_repo_cache
+
+    xmlhash.elements('repository') do |repo_xml_hash|
+      update_repository_without_path_element(repo_xml_hash)
+    end
     # Some repositories might be refered by path elements before they appear in the
     # xml tree. Thus we have 2 iterations. First one goes through all repository
     # elements, second run handles path elements.
     # This can be the case when creating multiple repositories in a project where one
     # repository uses another one, eg. importing an existing config from elsewhere.
-    xmlhash.elements('repository') do |repo_xml_hash|
-      update_one_repository_without_path(repo_xml_hash)
-    end
     xmlhash.elements('repository') do |repo_xml_hash|
       current_repo = self.repositories.find_by_name(repo_xml_hash['name'])
       current_repo.update_path_elements(repo_xml_hash)
@@ -623,17 +624,17 @@ class Project < ActiveRecord::Base
     end
   end
 
-  def update_one_repository_without_path(repo)
-    current_repo = @repocache[repo['name']]
+  def update_repository_without_path_element(xml_hash)
+    current_repo = @repocache[xml_hash['name']]
     unless current_repo
-      logger.debug "adding repository '#{repo['name']}'"
-      current_repo = self.repositories.new(:name => repo['name'])
+      logger.debug "adding repository '#{xml_hash['name']}'"
+      current_repo = self.repositories.new(name: xml_hash['name'])
     end
-    logger.debug "modifying repository '#{repo['name']}'"
+    logger.debug "modifying repository '#{xml_hash['name']}'"
 
-    current_repo.update_from_xml_hash(repo)
+    current_repo.update_from_xml_hash(xml_hash)
 
-    @repocache.delete repo['name']
+    @repocache.delete(xml_hash['name'])
   end
 
   def parse_develproject(xmlhash)
