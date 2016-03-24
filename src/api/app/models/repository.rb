@@ -208,4 +208,99 @@ class Repository < ActiveRecord::Base
       xml.elements('url').last.to_s
     end
   end
+
+  def update_from_xml_hash(xml_hash)
+    update_flags(xml_hash)
+    update_release_targets(xml_hash)
+    update_hostsystem(xml_hash)
+    update_repository_architectures(xml_hash)
+    update_download_repositories(xml_hash)
+
+    self.save!
+  end
+
+  private
+
+  def update_flags(xml_hash)
+    self.rebuild     = xml_hash["rebuild"]
+    self.block       = xml_hash["block"]
+    self.linkedbuild = xml_hash["linkedbuild"]
+  end
+
+  def update_release_targets(xml_hash)
+    # destroy all current releasetargets
+    self.release_targets.destroy_all
+
+    # recreate release targets from xml
+    xml_hash.elements("releasetarget") do |rt|
+      if Project.find_by(name: rt["project"]).is_remote?
+        raise Project::SaveError, "Can not use remote repository as release target '#{rt["project"]}/#{rt["repository"]}'"
+      else
+        target_repo = Repository.find_by_project_and_name(rt["project"], rt["repository"])
+        if target_repo
+          self.release_targets.new(target_repository: target_repo, trigger: rt["trigger"])
+        else
+          raise Project::SaveError, "Unknown target repository '#{rt["project"]}/#{rt["repository"]}'"
+        end
+      end
+    end
+  end
+
+  def update_hostsystem(xml_hash)
+    if xml_hash["hostsystem"]
+      hostsystem = Project.get_by_name(xml_hash["hostsystem"]["project"])
+      target_repo = hostsystem.repositories.find_by_name(xml_hash["hostsystem"]["repository"])
+      if xml_hash["hostsystem"]["project"] == self.project.name && xml_hash["hostsystem"]["repository"] == xml_hash["name"]
+        raise Project::SaveError, "Using same repository as hostsystem element is not allowed"
+      end
+      unless target_repo
+        raise Project::SaveError, "Unknown target repository '#{xml_hash["hostsystem"]["project"]}/#{xml_hash["hostsystem"]["repository"]}'"
+      end
+      self.hostsystem = target_repo
+    elsif self.hostsystem
+      self.hostsystem = nil
+    end
+
+    self.save! if self.changed?
+  end
+
+  def update_repository_architectures(xml_hash)
+    # destroy architecture references
+    logger.debug "delete all of #{self.id}"
+    RepositoryArchitecture.delete_all(["repository_id = ?", self.id])
+
+    position = 1
+    xml_hash.elements("arch") do |arch|
+      unless Architecture.archcache.has_key? arch
+        raise Project::SaveError, "unknown architecture: '#{arch}'"
+      end
+      if self.repository_architectures.where(architecture: Architecture.archcache[arch]).exists?
+        raise Project::SaveError, "double use of architecture: '#{arch}'"
+      end
+      self.repository_architectures.create architecture: Architecture.archcache[arch], position: position
+      position += 1
+    end
+  end
+
+  def update_download_repositories(xml_hash)
+    return unless xml_hash["download"]
+
+    dod_repositories = []
+    xml_hash.elements("download").each do |xml_download|
+      download_repository = DownloadRepository.new(
+        arch:       xml_download["arch"],
+        url:        xml_download["url"],
+        repotype:   xml_download["repotype"],
+        archfilter: xml_download["archfilter"],
+        pubkey:     xml_download["pubkey"]
+      )
+      if xml_download["master"]
+         download_repository.masterurl = xml_download["master"]["url"]
+         download_repository.mastersslfingerprint = xml_download["master"]["sslfingerprint"]
+      end
+      dod_repositories << download_repository
+    end
+
+    self.download_repositories.replace(dod_repositories)
+  end
 end

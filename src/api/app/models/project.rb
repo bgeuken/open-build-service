@@ -631,39 +631,15 @@ class Project < ActiveRecord::Base
     end
     logger.debug "modifying repository '#{repo['name']}'"
 
-    update_repository_flags(current_repo, repo)
-    update_release_targets(current_repo, repo)
-    update_hostsystem(current_repo, repo)
-    update_repository_architectures(current_repo, repo)
-    update_download_repositories(current_repo, repo)
-
-    current_repo.save!
+    current_repo.update_from_xml_hash(repo)
 
     @repocache.delete repo['name']
-  end
-
-  def update_download_repositories(current_repo, repo)
-    download_repositories = []
-    repo.elements('download').each do |xml_download|
-      download_repository = DownloadRepository.new(arch: xml_download['arch'],
-                    url: xml_download['url'],
-                    repotype: xml_download['repotype'],
-                    archfilter: xml_download['archfilter'],
-                    pubkey: xml_download['pubkey'])
-      if xml_download['master']
-         download_repository.masterurl = xml_download['master']['url']
-         download_repository.mastersslfingerprint = xml_download['master']['sslfingerprint']
-      end
-      download_repositories << download_repository
-    end
-    current_repo.download_repositories.replace(download_repositories)
   end
 
   def update_path_elements(current_repo, repo)
     # destroy all current pathelements
     current_repo.path_elements.destroy_all
-    next unless repo["path"]
-
+    return unless repo["path"]
 
     # recreate pathelements from xml
     position = 1
@@ -681,67 +657,6 @@ class Project < ActiveRecord::Base
     end
 
     current_repo.save!
-  end
-
-  def update_release_targets(current_repo, repo)
-    # destroy all current releasetargets
-    current_repo.release_targets.destroy_all
-
-    # recreate release targets from xml
-    repo.elements('releasetarget') do |rt|
-      if Project.find_by(name: rt['project']).is_remote?
-        raise SaveError, "Can not use remote repository as release target '#{rt['project']}/#{rt['repository']}'"
-      else
-        target_repo = Repository.find_by_project_and_name(rt['project'], rt['repository'])
-        if target_repo
-          current_repo.release_targets.new(target_repository: target_repo, trigger: rt['trigger'])
-        else
-          raise SaveError, "Unknown target repository '#{rt['project']}/#{rt['repository']}'"
-        end
-      end
-    end
-  end
-
-  def update_hostsystem(current_repo, repo)
-    if repo.has_key?('hostsystem')
-      hostsystem = Project.get_by_name repo['hostsystem']['project']
-      target_repo = hostsystem.repositories.find_by_name repo['hostsystem']['repository']
-      if repo['hostsystem']['project'] == self.name and repo['hostsystem']['repository'] == repo['name']
-        raise SaveError, 'Using same repository as hostsystem element is not allowed'
-      end
-      unless target_repo
-        raise SaveError, "Unknown target repository '#{repo['hostsystem']['project']}/#{repo['hostsystem']['repository']}'"
-      end
-      current_repo.hostsystem = target_repo
-    elsif current_repo.hostsystem
-      current_repo.hostsystem = nil
-    end
-
-    current_repo.save! if current_repo.changed?
-  end
-
-  def update_repository_architectures(current_repo, repo)
-    # destroy architecture references
-    logger.debug "delete all of #{current_repo.id}"
-    RepositoryArchitecture.delete_all(['repository_id = ?', current_repo.id])
-
-    position = 1
-    repo.elements('arch') do |arch|
-      unless Architecture.archcache.has_key? arch
-        raise SaveError, "unknown architecture: '#{arch}'"
-      end
-      if current_repo.repository_architectures.where(architecture: Architecture.archcache[arch]).exists?
-        raise SaveError, "double use of architecture: '#{arch}'"
-      end
-      current_repo.repository_architectures.create architecture: Architecture.archcache[arch], position: position
-      position += 1
-    end
-  end
-
-  def update_repository_flags(current_repo, repo)
-    current_repo.rebuild     = repo['rebuild']
-    current_repo.block       = repo['block']
-    current_repo.linkedbuild = repo['linkedbuild']
   end
 
   def parse_develproject(xmlhash)
