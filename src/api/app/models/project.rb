@@ -591,12 +591,12 @@ class Project < ActiveRecord::Base
     # elements, second run handles path elements.
     # This can be the case when creating multiple repositories in a project where one
     # repository uses another one, eg. importing an existing config from elsewhere.
-    xmlhash.elements('repository') do |repo|
-      update_one_repository_without_path(repo)
+    xmlhash.elements('repository') do |repo_xml_hash|
+      update_one_repository_without_path(repo_xml_hash)
     end
-    xmlhash.elements('repository') do |repo|
-      current_repo = self.repositories.find_by_name(repo['name'])
-      update_path_elements(current_repo, repo)
+    xmlhash.elements('repository') do |repo_xml_hash|
+      current_repo = self.repositories.find_by_name(repo_xml_hash['name'])
+      current_repo.update_path_elements(repo_xml_hash)
     end
 
     # delete remaining repositories in @repocache
@@ -634,29 +634,6 @@ class Project < ActiveRecord::Base
     current_repo.update_from_xml_hash(repo)
 
     @repocache.delete repo['name']
-  end
-
-  def update_path_elements(current_repo, repo)
-    # destroy all current pathelements
-    current_repo.path_elements.destroy_all
-    return unless repo["path"]
-
-    # recreate pathelements from xml
-    position = 1
-    repo.elements('path') do |path|
-      link_repo = Repository.find_by_project_and_name(path['project'], path['repository'])
-      if path['project'] == self.name &&
-          path['repository'] == repo['name']
-        raise SaveError, 'Using same repository as path element is not allowed'
-      end
-      unless link_repo
-        raise SaveError, "unable to walk on path '#{path['project']}/#{path['repository']}'"
-      end
-      current_repo.path_elements.new(link: link_repo, position: position)
-      position += 1
-    end
-
-    current_repo.save!
   end
 
   def parse_develproject(xmlhash)

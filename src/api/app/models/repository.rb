@@ -219,6 +219,30 @@ class Repository < ActiveRecord::Base
     self.save!
   end
 
+  def update_path_elements(xml_hash)
+    self.path_elements.destroy_all
+    return unless xml_hash["path"]
+
+    # recreate pathelements from xml
+    position = 1
+    xml_hash.elements("path") do |path|
+      project_name = path["project"]
+      repo_name    = path["repository"]
+      link_repo = Repository.find_by_project_and_name(project_name, repo_name)
+      if link_repo
+        if project_name == self.project.name && repo_name == xml_hash["name"]
+          raise Project::SaveError, "Using same repository as path element is not allowed"
+        end
+        self.path_elements.new(link: link_repo, position: position)
+        position += 1
+      else
+        raise Project::SaveError, "unable to walk on path '#{project_name}/#{repo_name}'"
+      end
+    end
+
+    self.save!
+  end
+
   private
 
   def update_flags(xml_hash)
@@ -232,15 +256,18 @@ class Repository < ActiveRecord::Base
     self.release_targets.destroy_all
 
     # recreate release targets from xml
-    xml_hash.elements("releasetarget") do |rt|
-      if Project.find_by(name: rt["project"]).is_remote?
-        raise Project::SaveError, "Can not use remote repository as release target '#{rt["project"]}/#{rt["repository"]}'"
+    xml_hash.elements("releasetarget") do |release_target|
+      project    = release_target["project"]
+      repository = release_target["repository"]
+
+      if Project.find_by(name: project).is_remote?
+        raise Project::SaveError, "Can not use remote repository as release target '#{project}/#{repository}'"
       else
-        target_repo = Repository.find_by_project_and_name(rt["project"], rt["repository"])
+        target_repo = Repository.find_by_project_and_name(project, repository)
         if target_repo
-          self.release_targets.new(target_repository: target_repo, trigger: rt["trigger"])
+          self.release_targets.new(target_repository: target_repo, trigger: release_target["trigger"])
         else
-          raise Project::SaveError, "Unknown target repository '#{rt["project"]}/#{rt["repository"]}'"
+          raise Project::SaveError, "Unknown target repository '#{project}/#{repository}'"
         end
       end
     end
@@ -250,14 +277,14 @@ class Repository < ActiveRecord::Base
     if xml_hash["hostsystem"]
       hostsystem = Project.get_by_name(xml_hash["hostsystem"]["project"])
       target_repo = hostsystem.repositories.find_by_name(xml_hash["hostsystem"]["repository"])
-      if xml_hash["hostsystem"]["project"] == self.project.name && xml_hash["hostsystem"]["repository"] == xml_hash["name"]
+      if target_repo.nil?
+        raise Project::SaveError, "Unknown target repository '#{hostsystem.name}/#{xml_hash["hostsystem"]["repository"]}'"
+      end
+      if hostsystem.name == self.project.name && target_repo.name == xml_hash["name"]
         raise Project::SaveError, "Using same repository as hostsystem element is not allowed"
       end
-      unless target_repo
-        raise Project::SaveError, "Unknown target repository '#{xml_hash["hostsystem"]["project"]}/#{xml_hash["hostsystem"]["repository"]}'"
-      end
       self.hostsystem = target_repo
-    elsif self.hostsystem
+    else
       self.hostsystem = nil
     end
 
@@ -266,18 +293,18 @@ class Repository < ActiveRecord::Base
 
   def update_repository_architectures(xml_hash)
     # destroy architecture references
-    logger.debug "delete all of #{self.id}"
+    logger.debug "delete all repository architectures of repository '#{self.id}'"
     RepositoryArchitecture.delete_all(["repository_id = ?", self.id])
 
     position = 1
     xml_hash.elements("arch") do |arch|
-      unless Architecture.archcache.has_key? arch
+      unless Architecture.archcache.has_key?(arch)
         raise Project::SaveError, "unknown architecture: '#{arch}'"
       end
       if self.repository_architectures.where(architecture: Architecture.archcache[arch]).exists?
         raise Project::SaveError, "double use of architecture: '#{arch}'"
       end
-      self.repository_architectures.create architecture: Architecture.archcache[arch], position: position
+      self.repository_architectures.create(architecture: Architecture.archcache[arch], position: position)
       position += 1
     end
   end
