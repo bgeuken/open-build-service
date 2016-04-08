@@ -37,7 +37,7 @@ if test -z "$SUBTEST"; then
       ;;
     backend)
       pushd ../backend
-      bundle exec make test_unit
+      make test_unit
       popd
       ;;
     *)
@@ -46,7 +46,7 @@ if test -z "$SUBTEST"; then
       bundle exec rake test:webui
       bundle exec rspec
       pushd ../backend
-      bundle exec make test_unit
+      make test_unit
       popd
       unset DO_COVERAGE
       bundle exec rake test:spider
