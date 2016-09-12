@@ -693,28 +693,39 @@ RSpec.describe Webui::ProjectController, vcr: true do
       login user
     end
 
-    it "project can't be unlocked if it hasn't lock and enable flags" do
-      post :unlock, project: user.home_project
-      is_expected.to redirect_to(action: :show, project: user.home_project)
-      expect(flash[:notice]).to eq("Project can't be unlocked: is not locked")
+    context "with a project that is locked" do
+      before do
+        user.home_project.flags.create(flag: 'lock', status: 'enable')
+      end
+
+      it 'successfully unlocks the project' do
+        post :unlock, project: user.home_project
+        is_expected.to redirect_to(action: :show, project: user.home_project)
+        expect(flash[:notice]).to eq('Successfully unlocked project')
+      end
+
+      context "with a project that has maintenance release requests" do
+        let!(:bs_request) { create(:bs_request, type: 'maintenance_release', source_project: user.home_project.name) }
+
+        before do
+          user.home_project.update(kind: 'maintenance_incident')
+          post :unlock, project: user.home_project
+        end
+
+        it "maintenance incident can't be unlocked" do
+          is_expected.to redirect_to(action: :show, project: user.home_project)
+          expect(flash[:notice]).to eq("Project can't be unlocked: Unlock of maintenance incident #{user.home_project.name} is not possible," +
+                                       " because there is a running release request: #{bs_request.id}")
+        end
+      end
     end
 
-    it "maintenance incident can't be unlocked if there are maintenance release requests" do
-      user.home_project.flags.create(flag: 'lock', status: 'enable')
-      request = create(:bs_request, state: :new)
-      request.bs_request_actions << create(:bs_request_action, type: 'maintenance_release', source_project: user.home_project.name)
-      user.home_project.update(kind: 'maintenance_incident')
-      post :unlock, project: user.home_project
-      is_expected.to redirect_to(action: :show, project: user.home_project)
-      expect(flash[:notice]).to eq("Project can't be unlocked: Unlock of maintenance incident #{user.home_project.name} is not possible," +
-                                   " because there is a running release request: #{request.id}")
-    end
-
-    it 'project successfully unlocked' do
-      user.home_project.flags.create(flag: 'lock', status: 'enable')
-      post :unlock, project: user.home_project
-      is_expected.to redirect_to(action: :show, project: user.home_project)
-      expect(flash[:notice]).to eq('Successfully unlocked project')
+    context "with a project that isn't locked" do
+      it "project can't be unlocked" do
+        post :unlock, project: user.home_project
+        is_expected.to redirect_to(action: :show, project: user.home_project)
+        expect(flash[:notice]).to eq("Project can't be unlocked: is not locked")
+      end
     end
   end
 end
