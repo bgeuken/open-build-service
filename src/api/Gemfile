@@ -13,8 +13,6 @@ gem 'nokogiri', '~>1.6.7'
 gem 'delayed_job_active_record', '>= 4.0.0'
 # to fill errbit
 gem 'hoptoad_notifier', "~> 2.3"
-# as JSON library - the default json conflicts with activerecord (by means of vice-versa monkey patching)
-gem 'yajl-ruby'
 # to search the database
 gem 'thinking-sphinx', '> 3.1'
 # to paginate search results
