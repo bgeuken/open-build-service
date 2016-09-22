@@ -4,7 +4,7 @@ require "browser_helper"
 # require real backend answers for projects/packages.
 # CONFIG['global_write_through'] = true
 
-RSpec.feature "Requests", :type => :feature, :js => true, vcr: false do
+RSpec.feature "Requests", :type => :feature, :js => true, vcr: true do
   let(:submitter) { create(:confirmed_user, login: 'kugelblitz' ) }
   let(:receiver) { create(:confirmed_user, login: 'titan' ) }
   let(:target_project) { receiver.home_project }
@@ -136,11 +136,10 @@ RSpec.feature "Requests", :type => :feature, :js => true, vcr: false do
       let!(:other_devel_package_link) { create(:package, develpackage: target_package) }
 
       before do
+        create_submit_request
         # Source package sources have to differ from target packages's sources
         User.current = submitter
         source_package.save_file(filename: "somefile.txt", file: "some more changes")
-
-        create_submit_request
       end
 
       it "forwards requests correctly" do
