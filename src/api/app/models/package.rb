@@ -4,6 +4,7 @@ require 'builder/xchar'
 require 'rexml/document'
 require_dependency 'has_relationships'
 require_dependency 'opensuse/validator'
+require 'prometheus_registry'
 
 class Package < ApplicationRecord
   include FlagHelper
@@ -697,9 +698,14 @@ class Package < ApplicationRecord
   end
 
   def store(opts = {})
-    # no write access check here, since this operation may will disable this permission ...
-    self.commit_opts = opts if opts
-    save!
+    metric = Prometheus::Client::Histogram.new(:obs_package_store, 'Duration of calling Package.store')
+    PrometheusRegistry.instance.register(metric)
+
+    metric.observe({ service: 'package store' }, Benchmark.realtime {
+      # no write access check here, since this operation may will disable this permission ...
+      self.commit_opts = opts if opts
+      save!
+    })
   end
 
   def reset_cache

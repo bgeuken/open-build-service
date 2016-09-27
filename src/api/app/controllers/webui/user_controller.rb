@@ -27,14 +27,20 @@ class Webui::UserController < Webui::WebuiController
   end
 
   def do_login
+    prometheus = Prometheus::Client.registry
+    metric = Prometheus::Client::Counter.new(:obs_user_login_total, "Counter for OBS logins")
+    prometheus.register(metric)
+
     user = User.find_with_credentials(params[:username], params[:password])
 
     if user && !user.is_active?
+      metric.increment({ type: "disabled" })
       redirect_to(root_path, error: "Your account is disabled. Please contact the adminsitrator for details.")
       return
     end
 
     unless user
+      metric.increment({ type: "failed" })
       redirect_to(user_login_path, error: 'Authentication failed')
       return
     end
@@ -43,6 +49,8 @@ class Webui::UserController < Webui::WebuiController
 
     session[:login] = user.login
     User.current = user
+
+    metric.increment({ type: "succeeded" })
 
     if request.referer.end_with?("/user/login")
       redirect_to home_path

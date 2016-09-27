@@ -1,5 +1,6 @@
 require_dependency 'opensuse/backend'
 require_dependency 'has_relationships'
+require 'prometheus_registry'
 
 class Project < ApplicationRecord
   include FlagHelper
@@ -873,11 +874,16 @@ class Project < ApplicationRecord
   end
 
   def store(opts = {})
-    self.commit_opts = opts if opts.present?
-    self.transaction do
-      save!
-      write_to_backend
-    end
+    metric = Prometheus::Client::Histogram.new(:obs_project_store, 'Duration of calling Project.store')
+    PrometheusRegistry.instance.register(metric)
+
+    metric.observe({ service: 'project store' }, Benchmark.realtime {
+      self.commit_opts = opts if opts.present?
+      self.transaction do
+        save!
+        write_to_backend
+      end
+    })
   end
 
   # The backend takes care of deleting the packages,
