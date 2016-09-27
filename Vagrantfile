@@ -27,6 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     fe.exec.commands 'contrib/start_development_backend', directory: '/vagrant'
     fe.exec.commands '*', directory: '/vagrant'
     fe.vm.network :forwarded_port, guest: 3000, host: 3000
+    fe.vm.network :forwarded_port, guest: 5000, host: 5000
 
     # FIXME: Setting group/owner is a temporary fix for
     # https://github.com/mitchellh/vagrant/issues/7616

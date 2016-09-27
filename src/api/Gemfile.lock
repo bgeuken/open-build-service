@@ -181,12 +181,15 @@ GEM
       websocket-driver (>= 0.2.0)
     power_assert (0.3.0)
     powerpack (0.1.1)
+    prometheus-client (0.6.0)
+      quantile (~> 0.2.0)
     pry (0.10.4)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
+    quantile (0.2.0)
     rack (2.0.1)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -373,6 +376,7 @@ DEPENDENCIES
   nokogiri (~> 1.6.7)
   nyan-cat-formatter
   poltergeist (>= 1.4)
+  prometheus-client
   pry (>= 0.9.12)
   pundit
   rails (~> 5.0.0)
@@ -402,4 +406,4 @@ DEPENDENCIES
   yajl-ruby
 
 BUNDLED WITH
-   1.10.6
+   1.12.5
