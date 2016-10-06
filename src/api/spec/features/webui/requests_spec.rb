@@ -135,8 +135,18 @@ RSpec.feature "Requests", :type => :feature, :js => true, vcr: true do
       let!(:devel_package_link) { create(:package, develpackage: target_package) }
       let!(:other_devel_package_link) { create(:package, develpackage: target_package) }
 
+      let(:target_project) { receiver.home_project }
+      let(:target_package) { create(:package_with_file, name: 'target_package', project: target_project) }
+      let(:source_project) { submitter.home_project }
+      let(:source_package) { create(:package_with_file, name: 'source_package', project: source_project) }
+
       before do
-        create_submit_request
+        create(:bs_request_action_submit,
+               target_project: target_project.name,
+               target_package: target_package.name,
+               source_project: source_project.name,
+               source_package: source_package.name,
+               bs_request_id: bs_request.id)
         # Source package sources have to differ from target packages's sources
         User.current = submitter
         source_package.save_file(filename: "somefile.txt", file: "some more changes")
