@@ -2,7 +2,7 @@ require "browser_helper"
 # WARNING: If you change tests make sure you uncomment this line
 # and start a test backend. Some of the BsRequestAction methods
 # require real backend answers for projects/packages.
-# CONFIG['global_write_through'] = true
+CONFIG['global_write_through'] = true
 
 RSpec.feature "Requests", :type => :feature, :js => true, vcr: true do
   let(:submitter) { create(:confirmed_user, login: 'kugelblitz' ) }
@@ -135,18 +135,23 @@ RSpec.feature "Requests", :type => :feature, :js => true, vcr: true do
       let!(:devel_package_link) { create(:package, develpackage: target_package) }
       let!(:other_devel_package_link) { create(:package, develpackage: target_package) }
 
-      let(:target_project) { receiver.home_project }
-      let(:target_package) { create(:package_with_file, name: 'target_package', project: target_project) }
-      let(:source_project) { submitter.home_project }
-      let(:source_package) { create(:package_with_file, name: 'source_package', project: source_project) }
+      # Overwrite let definitions for request and request action
+      let!(:bs_request_action) do
+        create(:bs_request_action_submit, target_project: target_project.name,
+                                          target_package: target_package.name,
+                                          source_project: source_project.name,
+                                          source_package: source_package.name)
+      end
+      let!(:bs_request) do
+        create(:bs_request, description:        "a long text - " * 200,
+                            creator:            submitter.login,
+                            bs_request_actions: [bs_request_action])
+      end
 
       before do
-        create(:bs_request_action_submit,
-               target_project: target_project.name,
-               target_package: target_package.name,
-               source_project: source_project.name,
-               source_package: source_package.name,
-               bs_request_id: bs_request.id)
+#    bs_request.bs_request_actions.delete_all
+        # We need a release target
+        create(:repository, project: source_project)
         # Source package sources have to differ from target packages's sources
         User.current = submitter
         source_package.save_file(filename: "somefile.txt", file: "some more changes")
@@ -156,8 +161,8 @@ RSpec.feature "Requests", :type => :feature, :js => true, vcr: true do
         login receiver
         visit request_show_path(bs_request.reload)
 
-        check "forward_devel_0"
-        check "forward_devel_1"
+        check "forward_devel_0", visible: false
+        check "forward_devel_1", visible: false
         click_button "Accept request"
 
         expect(page).to have_text("Request #{bs_request.number} (accepted)")

@@ -6,6 +6,7 @@ FactoryGirl.define do
     transient do
       type nil
       source_project nil
+      bs_request_actions []
     end
 
     before(:create) do |request, evaluator|
@@ -15,6 +16,11 @@ FactoryGirl.define do
         request.creator   = user.login
         request.commenter = user.login
       end
+
+      evaluator.bs_request_actions.each do |bs_request_action|
+        request.bs_request_actions << bs_request_action
+      end
+
       if request.bs_request_actions.none?
         request.bs_request_actions << create(:bs_request_action, type: evaluator.type, source_project: evaluator.source_project)
       end
