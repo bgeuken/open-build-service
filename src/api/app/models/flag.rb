@@ -60,18 +60,31 @@ class Flag < ApplicationRecord
     same_flag = main_object.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id)
     if main_object.kind_of? Package
       if variant == 'effective'
-        same_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id) unless
-          all_flag || same_flag || repo_flag || arch_flag
-        repo_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo) unless
-          all_flag || repo_flag || arch_flag
-        arch_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id) unless
-          all_flag || arch_flag
-        all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag) unless all_flag
+        unless all_flag || same_flag || repo_flag || arch_flag
+          same_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id)
+        end
+        unless all_flag || repo_flag || arch_flag
+          repo_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo)
+        end
+        unless all_flag || arch_flag
+          arch_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id)
+        end
+        unless all_flag
+          all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag)
+        end
       elsif  variant == 'default'
-        same_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id) unless same_flag
-        repo_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo) unless repo_flag
-        arch_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id) unless arch_flag
-        all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag) unless all_flag
+        unless same_flag
+          same_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id)
+        end
+        unless repo_flag
+          repo_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo)
+        end
+        unless arch_flag
+          arch_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id)
+        end
+        unless all_flag
+          all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag)
+        end
       end
     end
 
