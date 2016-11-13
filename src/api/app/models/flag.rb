@@ -9,6 +9,7 @@ class Flag < ApplicationRecord
   validates :flag, presence: true
   validates :position, presence: true
   validates_numericality_of :position, only_integer: true
+  validates_uniqueness_of :flag, scope: [:repo, :project_id, :package_id, :architecture_id, :status]
 
   after_save :discard_forbidden_project_cache
   after_destroy :discard_forbidden_project_cache
@@ -27,15 +28,6 @@ class Flag < ApplicationRecord
     errors.add(:name, 'Please set either project or package.') unless project.nil? || package.nil?
     errors.add(:flag, 'There needs to be a valid flag.') unless FlagHelper::TYPES.has_key?(flag.to_s)
     errors.add(:status, 'Status needs to be enable or disable') unless (status && (status.to_sym == :enable || status.to_sym == :disable))
-    # rubocop:enable Metrics/LineLength
-  end
-
-  validate :validate_duplicates, on: :create
-  def validate_duplicates
-    # rubocop:disable Metrics/LineLength
-    if Flag.where("status = ? AND repo = ? AND project_id = ? AND package_id = ? AND architecture_id = ? AND flag = ?", status, repo, project_id, package_id, architecture_id, flag).exists?
-      errors.add(:flag, "Flag already exists")
-    end
     # rubocop:enable Metrics/LineLength
   end
 
