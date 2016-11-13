@@ -51,13 +51,12 @@ class Flag < ApplicationRecord
 
   def compute_status(variant)
     if variant == "effective"
-      status = ( flags_status(repo, architecture_id) || flags_status(repo) ||
-                 flags_status(nil, architecture_id)  || flags_status )
+      status = (repo_and_arch_status || repo_status || arch_status || all_status)
     elsif variant == "default"
       status = if main_object.kind_of?(Package)
-        flags_status
+        all_status
       elsif repo && architecture_id
-        flags_status(repo) || flags_status(nil, architecture_id)
+        repo_status || arch_status
       end
     end
 
@@ -165,5 +164,32 @@ class Flag < ApplicationRecord
     else
       "#{attr_name} IS NULL"
     end
+  end
+
+  # Flags are presented in a ui in a table.
+  # The model implementation matches that.
+  # So repos are on x axis, arch on y axis,
+  # 'All' at the intersection.
+  #
+  # Both repo and arch got selected
+  # FIXME: This doesn't seem to be necessary.
+  #        One of them has priority anyway.
+  def repo_and_arch_status
+    flags_status(repo, architecture_id)
+  end
+
+  # Specific repo got selected
+  def repo_status
+    flags_status(repo)
+  end
+
+  # Specific arch got selected
+  def arch_status
+    flags_status(nil, architecture_id)
+  end
+
+  # All got selected (repo and arch are nil)
+  def all_status
+    flags_status
   end
 end
