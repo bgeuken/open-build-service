@@ -54,60 +54,18 @@ class Flag < ApplicationRecord
   end
 
   def compute_status(variant)
-    all_flag = main_object.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag)
-    repo_flag = main_object.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo)
-    arch_flag = main_object.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id)
-    same_flag = main_object.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id)
-    if main_object.kind_of? Package
-      if variant == 'effective'
-        unless all_flag || same_flag || repo_flag || arch_flag
-          same_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id)
-        end
-        unless all_flag || repo_flag || arch_flag
-          repo_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo)
-        end
-        unless all_flag || arch_flag
-          arch_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id)
-        end
-        unless all_flag
-          all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag)
-        end
-      elsif  variant == 'default'
-        unless same_flag
-          same_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id)
-        end
-        unless repo_flag
-          repo_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo)
-        end
-        unless arch_flag
-          arch_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id)
-        end
-        unless all_flag
-          all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag)
-        end
+    if variant == "effective"
+      status = ( flags_status(repo, architecture_id) || flags_status(repo) ||
+                 flags_status(nil, architecture_id)  || flags_status )
+    elsif variant == "default"
+      status = if main_object.kind_of?(Package)
+        flags_status
+      elsif repo && architecture_id
+        flags_status(repo) || flags_status(nil, architecture_id)
       end
     end
 
-    if variant == 'effective'
-      return same_flag.status if same_flag
-      return repo_flag.status if repo_flag
-      return arch_flag.status if arch_flag
-      return all_flag.status if all_flag
-    elsif  variant == 'default'
-      if same_flag
-        return repo_flag.status if repo_flag
-        return arch_flag.status if arch_flag
-      end
-      if same_flag || arch_flag || repo_flag
-        return all_flag.status if all_flag
-      end
-      if main_object.kind_of? Package
-        all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag)
-        return all_flag.status if all_flag
-      end
-    end
-
-    return Flag.default_status(flag)
+    status || Flag.default_status(flag)
   end
   private :compute_status
 
@@ -190,5 +148,26 @@ class Flag < ApplicationRecord
 
   def main_object
     package || project
+  end
+
+  private
+
+  def flags_status(repo = nil, architecture_id = nil)
+    # rubocop:disable Rails/FindBy
+    query = (main_object.kind_of?(Package) ? main_object.project : main_object)
+    query.flags.
+      where(flag: flag).
+      where(sql_select("repo", repo)).
+      where(sql_select("architecture_id", architecture_id)).
+      first.try(:status)
+    # rubocop:enable Rails/FindBy
+  end
+
+  def sql_select(attr_name, value)
+    if value
+      ["#{attr_name} = ?", value]
+    else
+      "#{attr_name} IS NULL"
+    end
   end
 end
