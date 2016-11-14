@@ -49,27 +49,18 @@ class Flag < ApplicationRecord
     Relationship.discard_cache if flag == 'access'
   end
 
-  def compute_status(variant)
-    if variant == "effective"
-      status = (repo_and_arch_status || repo_status || arch_status || all_status)
-    elsif variant == "default"
-      status = if main_object.kind_of?(Package)
-        all_status
-      elsif repo && architecture_id
-        repo_status || arch_status
-      end
+  def default_status
+    status = if repo && architecture_id
+      repo_status || arch_status || repo_and_arch_status
+    elsif main_object.kind_of?(Package)
+      repo_and_arch_status
     end
 
     status || Flag.default_status(flag)
   end
-  private :compute_status
-
-  def default_status
-    return compute_status('default')
-  end
 
   def effective_status
-    return compute_status('effective')
+    repo_and_arch_status || repo_status || arch_status || all_status || Flag.default_status(flag)
   end
 
   def has_children
