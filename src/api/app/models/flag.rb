@@ -60,7 +60,8 @@ class Flag < ApplicationRecord
   end
 
   def effective_status
-    repo_and_arch_status || repo_status || arch_status || all_status || Flag.default_status(flag)
+     all_status || arch_status || repo_status || repo_and_arch_status || Flag.default_status(flag)
+#    repo_and_arch_status || repo_status || arch_status || all_status || Flag.default_status(flag)
   end
 
   def has_children
