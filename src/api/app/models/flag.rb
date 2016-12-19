@@ -48,25 +48,29 @@ class Flag < ApplicationRecord
     Relationship.discard_cache if flag == 'access'
   end
 
+  def first_by_repo_and_arch(repo = nil, arch = nil)
+    find_by(flag: flag, repo: repo, architecture_id: arch)
+  end
+
   def compute_status(variant)
-    all_flag = main_object.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag)
-    repo_flag = main_object.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo)
-    arch_flag = main_object.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id)
-    same_flag = main_object.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id)
+    all_flag = main_object.flags.first_by_repo_and_arch
+    repo_flag = main_object.flags.first_by_repo_and_arch(repo)
+    arch_flag = main_object.flags.first_by_repo_and_arch(nil, architecture_id)
+    same_flag = main_object.flags.first_by_repo_and_arch(repo, architecture_id)
     if main_object.kind_of? Package
       if variant == 'effective'
-        same_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id) unless
+        same_flag = main_object.project.flags.first_by_repo_and_arch(repo, architecture_id) unless
           all_flag || same_flag || repo_flag || arch_flag
-        repo_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo) unless
+        repo_flag = main_object.project.flags.first_by_repo_and_arch(repo, architecture_id) unless
           all_flag || repo_flag || arch_flag
-        arch_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id) unless
+        arch_flag = main_object.project.flags.first_by_repo_and_arch(nil, architecture_id) unless
           all_flag || arch_flag
-        all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag) unless all_flag
+        all_flag = main_object.project.flags.first_by_repo_and_arch unless all_flag
       elsif variant == 'default'
-        same_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id = ?", flag, repo, architecture_id) unless same_flag
-        repo_flag = main_object.project.flags.find_by("flag = ? AND repo = ? AND architecture_id IS NULL", flag, repo) unless repo_flag
-        arch_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id = ?", flag, architecture_id) unless arch_flag
-        all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag) unless all_flag
+        same_flag = main_object.project.flags.first_by_repo_and_arch(repo, architecture_id) unless same_flag
+        repo_flag = main_object.project.flags.first_by_repo_and_arch(repo) unless repo_flag
+        arch_flag = main_object.project.flags.first_by_repo_and_arch(nil, architecture_id) unless arch_flag
+        all_flag = main_object.project.flags.first_by_repo_and_arch unless all_flag
       end
     end
 
@@ -84,7 +88,7 @@ class Flag < ApplicationRecord
         return all_flag.status if all_flag
       end
       if main_object.kind_of? Package
-        all_flag = main_object.project.flags.find_by("flag = ? AND repo IS NULL AND architecture_id IS NULL", flag)
+        all_flag = main_object.project.flags.first_by_repo_and_arch
         return all_flag.status if all_flag
       end
     end
