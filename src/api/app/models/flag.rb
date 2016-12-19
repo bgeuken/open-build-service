@@ -5,8 +5,8 @@ class Flag < ApplicationRecord
   belongs_to :architecture
 
   scope :of_type, ->(type) { where(flag: type) }
-  scope :first_by_flag_repo_and_arch, ->(flag, repo = nil, arch = nil) {
-    find_by(flag: flag, repo: repo, architecture_id: arch)
+  scope :by_flag_repo_and_arch, ->(flag, repo = nil, arch = nil) {
+    where(flag: flag, repo: repo, architecture_id: arch)
   }
 
   validates :flag, presence: true
@@ -52,29 +52,29 @@ class Flag < ApplicationRecord
   end
 
   def compute_status(variant)
-    all_flag = main_object.flags.first_by_flag_repo_and_arch(flag)
-    repo_flag = main_object.flags.first_by_flag_repo_and_arch(flag, repo)
-    arch_flag = main_object.flags.first_by_flag_repo_and_arch(flag, nil, architecture_id)
-    same_flag = main_object.flags.first_by_flag_repo_and_arch(flag, repo, architecture_id)
+    all_flag = main_object.flags.by_flag_repo_and_arch(flag).first
+    repo_flag = main_object.flags.by_flag_repo_and_arch(flag, repo).first
+    arch_flag = main_object.flags.by_flag_repo_and_arch(flag, nil, architecture_id).first
+    same_flag = main_object.flags.by_flag_repo_and_arch(flag, repo, architecture_id).first
     if main_object.kind_of? Package
       if variant == 'effective'
         unless all_flag || same_flag || repo_flag || arch_flag
-          same_flag = main_object.project.flags.first_by_flag_repo_and_arch(flag, repo, architecture_id)
+          same_flag = main_object.project.flags.by_flag_repo_and_arch(flag, repo, architecture_id).first
         end
         unless all_flag || repo_flag || arch_flag
-          repo_flag = main_object.project.flags.first_by_flag_repo_and_arch(flag, repo, architecture_id)
+          repo_flag = main_object.project.flags.by_flag_repo_and_arch(flag, repo, architecture_id).first
         end
         unless all_flag || arch_flag
-          arch_flag = main_object.project.flags.first_by_flag_repo_and_arch(flag, nil, architecture_id)
+          arch_flag = main_object.project.flags.by_flag_repo_and_arch(flag, nil, architecture_id).first
         end
         unless all_flag
-          all_flag = main_object.project.flags.first_by_flag_repo_and_arch(flag)
+          all_flag = main_object.project.flags.by_flag_repo_and_arch(flag).first
         end
       elsif variant == 'default'
-        same_flag = main_object.project.flags.first_by_flag_repo_and_arch(flag, repo, architecture_id) unless same_flag
-        repo_flag = main_object.project.flags.first_by_flag_repo_and_arch(flag, repo) unless repo_flag
-        arch_flag = main_object.project.flags.first_by_flag_repo_and_arch(flag, nil, architecture_id) unless arch_flag
-        all_flag = main_object.project.flags.first_by_flag_repo_and_arch(flag) unless all_flag
+        same_flag = main_object.project.flags.by_flag_repo_and_arch(flag, repo, architecture_id).first unless same_flag
+        repo_flag = main_object.project.flags.by_flag_repo_and_arch(flag, repo).first unless repo_flag
+        arch_flag = main_object.project.flags.by_flag_repo_and_arch(flag, nil, architecture_id).first unless arch_flag
+        all_flag = main_object.project.flags.by_flag_repo_and_arch(flag).first unless all_flag
       end
     end
 
@@ -92,7 +92,7 @@ class Flag < ApplicationRecord
         return all_flag.status if all_flag
       end
       if main_object.kind_of? Package
-        all_flag = main_object.project.flags.first_by_flag_repo_and_arch(flag)
+        all_flag = main_object.project.flags.by_flag_repo_and_arch(flag).first
         return all_flag.status if all_flag
       end
     end
