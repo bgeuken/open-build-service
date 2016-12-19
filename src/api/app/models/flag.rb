@@ -59,13 +59,18 @@ class Flag < ApplicationRecord
     same_flag = main_object.flags.first_by_repo_and_arch(repo, architecture_id)
     if main_object.kind_of? Package
       if variant == 'effective'
-        same_flag = main_object.project.flags.first_by_repo_and_arch(repo, architecture_id) unless
-          all_flag || same_flag || repo_flag || arch_flag
-        repo_flag = main_object.project.flags.first_by_repo_and_arch(repo, architecture_id) unless
-          all_flag || repo_flag || arch_flag
-        arch_flag = main_object.project.flags.first_by_repo_and_arch(nil, architecture_id) unless
-          all_flag || arch_flag
-        all_flag = main_object.project.flags.first_by_repo_and_arch unless all_flag
+        unless all_flag || same_flag || repo_flag || arch_flag
+          same_flag = main_object.project.flags.first_by_repo_and_arch(repo, architecture_id)
+        end
+        unless all_flag || repo_flag || arch_flag
+          repo_flag = main_object.project.flags.first_by_repo_and_arch(repo, architecture_id)
+        end
+        unless all_flag || arch_flag
+          arch_flag = main_object.project.flags.first_by_repo_and_arch(nil, architecture_id)
+        end
+        unless all_flag
+          all_flag = main_object.project.flags.first_by_repo_and_arch
+        end
       elsif variant == 'default'
         same_flag = main_object.project.flags.first_by_repo_and_arch(repo, architecture_id) unless same_flag
         repo_flag = main_object.project.flags.first_by_repo_and_arch(repo) unless repo_flag
