@@ -117,11 +117,8 @@ class AttributeController < ApplicationController
 
     # permission check via User model
     return unless extract_user
-    unless @http_user.can_modify_attribute_definition?(ans)
-      render_error status: 403, errorcode: 'permissions denied',
-        message: "Attribute type changes are not permitted"
-      return
-    end
+
+    authorize ans
 
     if request.post? || request.put?
       logger.debug "--- updating attribute type definitions ---"
@@ -236,23 +233,34 @@ class AttributeController < ApplicationController
 
     # checks
     if params[:attribute]
-      unless User.current.can_create_attribute_in? @attribute_container, namespace: params[:namespace], name: params[:name]
-        render_error status: 403, errorcode: "change_attribute_no_permission",
-                     message: "user #{user.login} has no permission to change attribute"
+      attrib_type = AttribType.find_by_namespace_and_name(params[:namespace], params[:name])
+      if attrib_type
+        attrib = Attrib.new(attrib_type: attrib_type)
+        if @attribute_container.is_a?(Project)
+          attrib.project = @attribute_container
+        else
+          attrib.package = @attribute_container
+        end
+        authorize attrib, :create?
+      else
+        render_error status: 404, errorcode: "change_attribute_attribute_not_exist",
+                     message: "AttribType '#{params[:namespace]}:#{params[:name]}' does not exist"
         return
       end
     else
       req.each('attribute') do |attr|
-        begin
-          can_create = User.current.can_create_attribute_in? @attribute_container, namespace: attr.value('namespace'), name: attr.value('name')
-        rescue ArgumentError => e
-          render_error status: 400, errorcode: "change_attribute_attribute_error",
-                       message: e.message
-          return
-        end
-        unless can_create
-          render_error status: 403, errorcode: "change_attribute_no_permission",
-                       message: "user #{user.login} has no permission to change attribute"
+        attrib_type = AttribType.find_by_namespace_and_name(attr.value("namespace"), attr.value("name"))
+        if attrib_type
+          attrib = Attrib.new(attrib_type: attrib_type)
+          if @attribute_container.is_a?(Project)
+            attrib.project = @attribute_container
+          else
+            attrib.package = @attribute_container
+          end
+          authorize attrib, :create?
+        else
+          render_error status: 404, errorcode: "create_attribute_attribute_not_exist",
+                       message: "AttribType '#{attr.value('namespace')}:#{attr.value('name')}' does not exist"
           return
         end
       end
