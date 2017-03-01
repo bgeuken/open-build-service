@@ -228,12 +228,18 @@ class AttributeController < ApplicationController
   def cmd_attribute
     find_attribute_container
 
-    # init
-    req = ActiveXML::Node.new(request.raw_post)
-
-    # checks
     if params[:attribute]
-      attrib_type = AttribType.find_by_namespace_and_name(params[:namespace], params[:name])
+      req = Xmlhash::XMLHash.new(
+        "attribute" => {
+          "name"      => params[:name],
+          "namespace" => params[:namespace]
+        })
+    else
+      req = Xmlhash.parse(request.raw_post)
+    end
+
+    req.elements('attribute') do |attr|
+      attrib_type = AttribType.find_by_namespace_and_name(attr['namespace'], attr['name'])
       if attrib_type
         attrib = Attrib.new(attrib_type: attrib_type)
         if @attribute_container.is_a?(Project)
@@ -243,32 +249,15 @@ class AttributeController < ApplicationController
         end
         authorize attrib, :create?
       else
-        render_error status: 404, errorcode: "change_attribute_attribute_not_exist",
-                     message: "AttribType '#{params[:namespace]}:#{params[:name]}' does not exist"
+        render_error status: 404, errorcode: "create_attribute_attribute_not_exist",
+                     message: "AttribType '#{attr['namespace']}:#{attr['name']}' does not exist"
         return
-      end
-    else
-      req.each('attribute') do |attr|
-        attrib_type = AttribType.find_by_namespace_and_name(attr.value("namespace"), attr.value("name"))
-        if attrib_type
-          attrib = Attrib.new(attrib_type: attrib_type)
-          if @attribute_container.is_a?(Project)
-            attrib.project = @attribute_container
-          else
-            attrib.package = @attribute_container
-          end
-          authorize attrib, :create?
-        else
-          render_error status: 404, errorcode: "create_attribute_attribute_not_exist",
-                       message: "AttribType '#{attr.value('namespace')}:#{attr.value('name')}' does not exist"
-          return
-        end
       end
     end
 
     # exec
     changed = false
-    req.each('attribute') do |attr|
+    req.elements('attribute') do |attr|
       changed = true if @attribute_container.store_attribute_axml(attr, @binary)
     end
     logger.debug "Attributes for #{@attribute_container.class} #{@attribute_container.name} changed, writing to backend" if changed
