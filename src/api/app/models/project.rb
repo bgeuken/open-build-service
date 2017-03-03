@@ -471,10 +471,15 @@ class Project < ApplicationRecord
     raise WritePermissionError, "No permission to modify project '#{name}' for user '#{User.current.login}'"
   end
 
-  def check_write_access(ignoreLock = nil)
-    return User.current.can_create_project?(name) if new_record?
+  def check_write_access(ignoreLock = nil, user = User.current)
+    return user.can_create_project?(name) if new_record?
 
-    User.current.can_modify_project?(self, ignoreLock)
+    user.can_modify_project?(self, ignoreLock)
+  end
+
+  # For the sake of having a more speaking method name...
+  def can_be_modified_by?(user)
+    check_write_access(nil, user)
   end
 
   def is_locked?

@@ -313,8 +313,13 @@ class Package < ApplicationRecord
     product_object || self
   end
 
-  def check_write_access(ignoreLock = nil)
-    User.current.can_modify_package? master_product_object, ignoreLock
+  def check_write_access(ignoreLock = nil, user = User.current)
+    user.can_modify_package? master_product_object, ignoreLock
+  end
+
+  # For the sake of having a more speaking method name...
+  def can_be_modified_by?(user)
+    check_write_access(nil, user)
   end
 
   def check_write_access!(ignoreLock = nil)
