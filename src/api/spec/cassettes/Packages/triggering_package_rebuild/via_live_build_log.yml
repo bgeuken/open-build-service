@@ -1353,7 +1353,11 @@ http_interactions:
   recorded_at: Mon, 13 Feb 2017 16:18:00 GMT
 - request:
     method: get
+<<<<<<< HEAD
     uri: http://localhost:3200/build/home:package_test_user/repository_214/x86_64/test_package/_jobstatus
+=======
+    uri: http://localhost:3200/build/home:package_test_user/repository_217/x86_64/test_package/_jobstatus
+>>>>>>> [ci] Add cassettes that were missing after cache_line removal
     body:
       encoding: US-ASCII
       string: ''
@@ -1387,10 +1391,17 @@ http_interactions:
           <details>404 project 'home:package_test_user' does not exist</details>
         </status>
     http_version: 
+<<<<<<< HEAD
   recorded_at: Mon, 08 May 2017 22:02:36 GMT
 - request:
     method: get
     uri: http://localhost:3200/build/home:package_test_user/repository_214/x86_64/test_package/_log?view=entry
+=======
+  recorded_at: Fri, 07 Apr 2017 14:38:17 GMT
+- request:
+    method: get
+    uri: http://localhost:3200/build/home:package_test_user/repository_217/x86_64/test_package/_log?view=entry
+>>>>>>> [ci] Add cassettes that were missing after cache_line removal
     body:
       encoding: US-ASCII
       string: ''
@@ -1424,10 +1435,17 @@ http_interactions:
           <details>404 project 'home:package_test_user' does not exist</details>
         </status>
     http_version: 
+<<<<<<< HEAD
   recorded_at: Mon, 08 May 2017 22:02:36 GMT
 - request:
     method: get
     uri: http://localhost:3200/build/home:package_test_user/repository_214/x86_64/test_package/_log?end=65536&nostream=1&start=0
+=======
+  recorded_at: Fri, 07 Apr 2017 14:38:17 GMT
+- request:
+    method: get
+    uri: http://localhost:3200/build/home:package_test_user/repository_217/x86_64/test_package/_log?end=65536&nostream=1&start=0
+>>>>>>> [ci] Add cassettes that were missing after cache_line removal
     body:
       encoding: US-ASCII
       string: ''
