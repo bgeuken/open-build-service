@@ -1011,6 +1011,7 @@ class Package < ApplicationRecord
     # but beware of packages where the name has already a dot
     name.gsub!(/\.[^\.]*$/, '') if opkg.project.is_maintenance_release? && !opkg.is_link?
     ChannelBinary.find_by_project_and_package(project_name, name).each do |cb|
+      p "Listed in #{project_name} #{name}"
       _add_channel(mode, cb, "Listed in #{project_name} #{name}")
     end
     # and all possible existing local links
@@ -1023,6 +1024,7 @@ class Package < ApplicationRecord
       # strip incident suffix in update release projects
       name.gsub!(/\.[^\.]*$/, '') if opkg.project.is_maintenance_release?
       ChannelBinary.find_by_project_and_package(project_name, name).each do |cb|
+        p "Listed in #{project_name} #{name}"
         _add_channel(mode, cb, "Listed in #{project_name} #{name}")
       end
     end
@@ -1446,6 +1448,7 @@ class Package < ApplicationRecord
   def _add_channel(mode, channel_binary, message)
     # add source container
     return if mode == :skip_disabled && !channel_binary.channel_binary_list.channel.is_active?
+    p "_add_channel for #{name}"
     cpkg = channel_binary.create_channel_package_into(project, message)
     return unless cpkg
     # be sure that the object exists or a background job get launched

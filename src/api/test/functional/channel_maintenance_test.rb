@@ -843,6 +843,7 @@ class ChannelMaintenanceTests < ActionDispatch::IntegrationTest
     reqid2 = node.value(:id)
 
     # accept
+    binding.pry
     post "/request/#{reqid2}?cmd=changestate&newstate=accepted&force=1"
     assert_response :success
     get "/request/#{reqid2}"

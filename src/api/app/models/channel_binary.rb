@@ -36,6 +36,9 @@ class ChannelBinary < ApplicationRecord
 
   def create_channel_package_into(project, comment = nil)
     channel = channel_binary_list.channel
+    p project.name
+    p channel.name
+#    binding.pry if project.name == "My:Maintenance:2"
     package_exists = Package.exists_by_project_and_name(project.name, channel.name,
                                                         follow_project_links: false,
                                                         allow_remote_packages: false

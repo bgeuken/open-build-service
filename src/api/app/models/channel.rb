@@ -134,6 +134,8 @@ class Channel < ApplicationRecord
   def branch_channel_package_into_project(project, comment = nil)
     cp = package
 
+    return tpkg if project.packages.where(name: name).exists?
+
     # create a package container
     tpkg = Package.new(name: name, title: cp.title, description: cp.description)
     project.packages << tpkg
