@@ -149,11 +149,11 @@ GEM
       haml (>= 4.0.6, < 6.0)
       html2haml (>= 1.0.1)
       railties (>= 4.0.1)
-    haml_lint (0.24.0)
+    haml_lint (0.26.0)
       haml (>= 4.0, < 5.1)
       rainbow
       rake (>= 10, < 13)
-      rubocop (>= 0.47.0)
+      rubocop (>= 0.49.0)
       sysexits (~> 1.1)
     hashdiff (0.3.4)
     hoptoad_notifier (2.4.11)
@@ -435,7 +435,7 @@ DEPENDENCIES
   font-awesome-rails
   gssapi
   haml-rails
-  haml_lint (~> 0.24.0)
+  haml_lint
   hoptoad_notifier (~> 2.3)
   jquery-datatables-rails
   jquery-rails

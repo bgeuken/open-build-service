@@ -7,3 +7,9 @@ linters:
   InstanceVariables:
     exclude:
       - "app/views/**/*"
+
+  InlineStyles:
+    enabled: false
+
+  ViewLength:
+    enabled: false
