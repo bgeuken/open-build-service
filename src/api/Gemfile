@@ -61,7 +61,7 @@ gem 'feature'
 # for profiling
 gem 'peek'
 gem 'peek-dalli'
-gem 'peek-mysql2'
+gem 'peek-mysql2', git: 'https://github.com/kyohsuke/peek-mysql2.git'
 # for kerberos authentication
 gem "gssapi", require: false
 

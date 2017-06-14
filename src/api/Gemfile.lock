@@ -1,3 +1,13 @@
+GIT
+  remote: https://github.com/kyohsuke/peek-mysql2.git
+  revision: 4268263d503f9a4a620b647edcb1bc02977f6539
+  specs:
+    peek-mysql2 (1.1.0)
+      concurrent-ruby
+      concurrent-ruby-ext
+      mysql2
+      peek
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -229,10 +239,6 @@ GEM
       atomic (>= 1.0.0)
       dalli
       peek
-    peek-mysql2 (1.1.0)
-      atomic (>= 1.0.0)
-      mysql2
-      peek
     pkg-config (1.2.3)
     poltergeist (1.15.0)
       capybara (~> 2.1)
@@ -447,7 +453,7 @@ DEPENDENCIES
   nyan-cat-formatter
   peek
   peek-dalli
-  peek-mysql2
+  peek-mysql2!
   poltergeist
   pry (>= 0.9.12)
   pundit
