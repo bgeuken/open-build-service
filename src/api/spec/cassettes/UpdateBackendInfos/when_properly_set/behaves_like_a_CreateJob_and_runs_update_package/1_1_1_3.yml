@@ -1,0 +1,445 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/_meta
+    body:
+      encoding: UTF-8
+      string: |
+        <project name="FakeProject">
+          <title>I Will Fear No Evil</title>
+          <description/>
+        </project>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '107'
+    body:
+      encoding: UTF-8
+      string: |
+        <project name="FakeProject">
+          <title>I Will Fear No Evil</title>
+          <description></description>
+        </project>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/_config
+    body:
+      encoding: UTF-8
+      string: Ea occaecati molestiae et. Nesciunt voluptatem nulla. Necessitatibus
+        adipisci maiores odit consequuntur nisi at. Perferendis quasi eos id voluptate.
+        Assumenda aperiam saepe aut et.
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '21'
+    body:
+      encoding: UTF-8
+      string: '<status code="ok" />
+
+'
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/FakePackage/_meta?user=_nobody_
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Of Mice and Men</title>
+          <description>Cum officia enim odio.</description>
+        </package>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '147'
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Of Mice and Men</title>
+          <description>Cum officia enim odio.</description>
+        </package>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/FakePackage/_meta
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Of Mice and Men</title>
+          <description>Cum officia enim odio.</description>
+        </package>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '147'
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Of Mice and Men</title>
+          <description>Cum officia enim odio.</description>
+        </package>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/FakePackage/_meta?user=_nobody_
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Of Mice and Men</title>
+          <description>Cum officia enim odio.</description>
+        </package>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '147'
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Of Mice and Men</title>
+          <description>Cum officia enim odio.</description>
+        </package>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/home:myself/_meta?user=myself
+    body:
+      encoding: UTF-8
+      string: |
+        <project name="home:myself">
+          <title/>
+          <description/>
+          <person userid="myself" role="maintainer"/>
+        </project>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '135'
+    body:
+      encoding: UTF-8
+      string: |
+        <project name="home:myself">
+          <title></title>
+          <description></description>
+          <person userid="myself" role="maintainer" />
+        </project>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: get
+    uri: http://localhost:3200/source/FakeProject/FakePackage?nofilename=1&view=info&withchangesmd5=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '149'
+    body:
+      encoding: UTF-8
+      string: |
+        <sourceinfo package="FakePackage" srcmd5="d41d8cd98f00b204e9800998ecf8427e" verifymd5="d41d8cd98f00b204e9800998ecf8427e">
+          <revtime/>
+        </sourceinfo>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: get
+    uri: http://localhost:3200/source/FakeProject/FakePackage
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '86'
+    body:
+      encoding: UTF-8
+      string: |
+        <directory name="FakePackage" srcmd5="d41d8cd98f00b204e9800998ecf8427e">
+        </directory>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: post
+    uri: http://localhost:3200/source/FakeProject/FakePackage?cmd=diff&linkrev=base&onlyissues=1&orev=0&view=xml
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Content-Type:
+      - application/octet-stream
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '286'
+    body:
+      encoding: UTF-8
+      string: |
+        <sourcediff key="5abe2d6b9023472e1ced440d687a3499">
+          <old project="FakeProject" package="FakePackage" rev="0" srcmd5="d41d8cd98f00b204e9800998ecf8427e" />
+          <new project="FakeProject" package="FakePackage" rev="0" srcmd5="d41d8cd98f00b204e9800998ecf8427e" />
+          <files />
+        </sourcediff>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: get
+    uri: http://localhost:3200/source/FakeProject/FakePackage?nofilename=1&view=info&withchangesmd5=1
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '149'
+    body:
+      encoding: UTF-8
+      string: |
+        <sourceinfo package="FakePackage" srcmd5="d41d8cd98f00b204e9800998ecf8427e" verifymd5="d41d8cd98f00b204e9800998ecf8427e">
+          <revtime/>
+        </sourceinfo>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: get
+    uri: http://localhost:3200/source/FakeProject/FakePackage
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '86'
+    body:
+      encoding: UTF-8
+      string: |
+        <directory name="FakePackage" srcmd5="d41d8cd98f00b204e9800998ecf8427e">
+        </directory>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+- request:
+    method: post
+    uri: http://localhost:3200/source/FakeProject/FakePackage?cmd=diff&linkrev=base&onlyissues=1&orev=0&view=xml
+    body:
+      encoding: UTF-8
+      string: ''
+    headers:
+      Content-Type:
+      - application/octet-stream
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '286'
+    body:
+      encoding: UTF-8
+      string: |
+        <sourcediff key="5abe2d6b9023472e1ced440d687a3499">
+          <old project="FakeProject" package="FakePackage" rev="0" srcmd5="d41d8cd98f00b204e9800998ecf8427e" />
+          <new project="FakeProject" package="FakePackage" rev="0" srcmd5="d41d8cd98f00b204e9800998ecf8427e" />
+          <files />
+        </sourcediff>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:12:00 GMT
+recorded_with: VCR 3.0.3

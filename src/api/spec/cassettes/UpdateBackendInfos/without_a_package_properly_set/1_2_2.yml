@@ -1,0 +1,234 @@
+---
+http_interactions:
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/_meta
+    body:
+      encoding: UTF-8
+      string: |
+        <project name="FakeProject">
+          <title>A Many-Splendoured Thing</title>
+          <description/>
+        </project>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '112'
+    body:
+      encoding: UTF-8
+      string: |
+        <project name="FakeProject">
+          <title>A Many-Splendoured Thing</title>
+          <description></description>
+        </project>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:11:58 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/_config
+    body:
+      encoding: UTF-8
+      string: Pariatur aliquid quia. Sed qui ex quia est. Nam quisquam omnis. Officiis
+        nobis quaerat assumenda et vel reprehenderit sint. Quis ut qui blanditiis.
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '21'
+    body:
+      encoding: UTF-8
+      string: '<status code="ok" />
+
+'
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:11:58 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/FakePackage/_meta?user=_nobody_
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Some Buried Caesar</title>
+          <description>Dicta rerum fuga debitis consequatur et.</description>
+        </package>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '168'
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Some Buried Caesar</title>
+          <description>Dicta rerum fuga debitis consequatur et.</description>
+        </package>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:11:59 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/FakePackage/_meta
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Some Buried Caesar</title>
+          <description>Dicta rerum fuga debitis consequatur et.</description>
+        </package>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '168'
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Some Buried Caesar</title>
+          <description>Dicta rerum fuga debitis consequatur et.</description>
+        </package>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:11:59 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/FakeProject/FakePackage/_meta?user=_nobody_
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Some Buried Caesar</title>
+          <description>Dicta rerum fuga debitis consequatur et.</description>
+        </package>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '168'
+    body:
+      encoding: UTF-8
+      string: |
+        <package name="FakePackage" project="FakeProject">
+          <title>Some Buried Caesar</title>
+          <description>Dicta rerum fuga debitis consequatur et.</description>
+        </package>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:11:59 GMT
+- request:
+    method: put
+    uri: http://localhost:3200/source/home:myself/_meta?user=myself
+    body:
+      encoding: UTF-8
+      string: |
+        <project name="home:myself">
+          <title/>
+          <description/>
+          <person userid="myself" role="maintainer"/>
+        </project>
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml
+      Cache-Control:
+      - no-cache
+      Connection:
+      - close
+      Content-Length:
+      - '135'
+    body:
+      encoding: UTF-8
+      string: |
+        <project name="home:myself">
+          <title></title>
+          <description></description>
+          <person userid="myself" role="maintainer" />
+        </project>
+    http_version: 
+  recorded_at: Tue, 27 Jun 2017 15:11:59 GMT
+recorded_with: VCR 3.0.3
