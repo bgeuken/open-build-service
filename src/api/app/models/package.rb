@@ -440,7 +440,9 @@ class Package < ApplicationRecord
     # to call update_activity before filter
     # NOTE: We need `Time.now`, otherwise the old tests suite doesn't work,
     # remove it when removing the tests
-    update({updated_at: Time.now})
+    # rubocop:disable Rails/SkipsModelValidations
+    project.touch
+    # rubocop:enable Rails/SkipsModelValidations
 
     # mark the backend infos "dirty"
     BackendPackage.where(package_id: id).delete_all
