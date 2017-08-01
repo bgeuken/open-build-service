@@ -1006,7 +1006,7 @@ class SourceController < ApplicationController
       render_ok
     else
       # inject as job
-      @project.delay.do_project_release(params)
+      ProjectDoProjectReleaseJob.perform_later(@project.id, params)
       render_invoked
     end
   end
