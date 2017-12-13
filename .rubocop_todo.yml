@@ -31,12 +31,6 @@ Layout/MultilineMethodCallIndentation:
     - 'src/api/test/unit/issue_test.rb'
     - 'src/api/test/unit/user_test.rb'
 
-# Offense count: 3
-Lint/DuplicateMethods:
-  Exclude:
-    - 'src/api/app/models/history_element.rb'
-    - 'src/api/lib/activexml/node.rb'
-
 # Offense count: 22
 Lint/HandleExceptions:
   Enabled: false
