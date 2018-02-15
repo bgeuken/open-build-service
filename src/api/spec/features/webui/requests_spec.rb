@@ -207,7 +207,8 @@ RSpec.feature 'Requests', type: :feature, js: true do
 
     scenario 'going through a request list' do
       login(submitter)
-      visit project_requests_path(project: project)
+      visit project_show_path(project)
+      click_link('Requests')
 
       expect(page).to have_text("Requests for #{project}")
       expect(page).to have_link("Show request ##{request_1.id}")
