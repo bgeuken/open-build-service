@@ -281,7 +281,7 @@ function autocompleteKiwiRepositories(project, repo_field) {
         if (!foundoptions)
           repo_field.append(new Option('No repos found'));
       },
-      complete: function (data) {
+      complete: function () {
         $('.ui-autocomplete-loading').hide();
         repo_field.trigger("change");
       }
@@ -299,10 +299,10 @@ function kiwiRepositoriesSetupAutocomplete(fields) {
     select: function (event, ui) {
       autocompleteKiwiRepositories(ui.item.value, repo_field);
     },
-    search: function(event, ui) {
+    search: function() {
       $(this).addClass('loading-spinner');
     },
-    response: function(event, ui) {
+    response: function() {
       $(this).removeClass('loading-spinner');
     }
   });
@@ -352,10 +352,10 @@ function kiwiPackagesSetupAutocomplete(fields) {
           response(data);
         });
     },
-    search: function(event, ui) {
+    search: function() {
       $(this).addClass('loading-spinner');
     },
-    response: function(event, ui) {
+    response: function() {
       $(this).removeClass('loading-spinner');
     },
     minLength: 2
