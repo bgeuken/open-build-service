@@ -23,6 +23,23 @@ RSpec.describe PersonController, vcr: false do
     end
   end
 
+  describe 'GET #get_userinfo' do
+    before do
+      login user
+      get :get_userinfo, params: { login: user.login }
+    end
+
+    it 'shows all user related data' do
+      assert_select 'person' do
+        assert_select 'login', text: user.login
+        assert_select 'email', text: user.email
+        assert_select 'realname', text: user.realname
+        assert_select 'state', text: 'confirmed'
+        assert_select 'ignore_auth_services', text: user.ignore_auth_services
+      end
+    end
+  end
+
   describe 'POST #post_userinfo' do
     before do
       login user
@@ -44,13 +61,29 @@ RSpec.describe PersonController, vcr: false do
     end
 
     context 'when in LDAP mode' do
+      let!(:old_password) { user.password_digest }
+
       before do
+        request.env['RAW_POST_DATA'] = 'password_has_changed'
         stub_const('CONFIG', CONFIG.merge('ldap_mode' => :on))
-        post :post_userinfo, params: { login: user.login, cmd: 'change_password', format: :xml }
       end
 
-      it 'user is not allowed to change their password' do
-        expect(response.header['X-Opensuse-Errorcode']).to eq('change_password_no_permission')
+      context 'and the user is configured to authorize on the LDAP server' do
+        before do
+          post :post_userinfo, params: { login: user.login, cmd: 'change_password', format: :xml }
+        end
+
+        it { expect(response.header['X-Opensuse-Errorcode']).to eq('change_password_no_permission') }
+        it { expect(old_password).to eq(user.password_digest) }
+      end
+
+      context 'and the user is configured to authorize locally' do
+        before do
+          user.update(ignore_auth_services: true)
+          post :post_userinfo, params: { login: user.login, cmd: 'change_password', format: :xml }
+        end
+
+        it { expect(old_password).to_not eq(user.reload.password_digest) }
       end
     end
   end

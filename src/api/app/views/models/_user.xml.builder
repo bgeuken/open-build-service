@@ -13,6 +13,8 @@ xml.person do
     xml.globalrole(role.title)
   end
 
+  xml.ignore_auth_services(my_model.ignore_auth_services)
+
   # Show the watchlist only to the user for privacy reasons
   if watchlist
     xml.watchlist do
