@@ -78,6 +78,7 @@ BuildRequires:  mysql-devel
 BuildRequires:  nodejs
 BuildRequires:  openldap2-devel
 BuildRequires:  ruby2.5-devel
+BuildRequires:  phantomjs
 # make sure this is in sync with the RAILS_GEM_VERSION specified in the
 # config/environment.rb of the various applications.
 # atm the obs rails version patch above unifies that setting among the applications
