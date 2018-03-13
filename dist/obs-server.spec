@@ -240,6 +240,7 @@ Requires:       mysql
 Requires:       ruby(abi) >= 2.0
 # needed for fulltext searching
 Requires:       sphinx >= 2.1.8
+BuildRequires:       sphinx >= 2.1.8
 BuildRequires:  rubygem(ruby-ldap)
 # For doc generation
 BuildRequires:  rubygem(i18n)
