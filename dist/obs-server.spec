@@ -1,7 +1,7 @@
 #
 # spec file for package obs-server
 #
-# Copyright (c) 2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2018 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -63,8 +63,21 @@ Release:        0
 Url:            http://www.openbuildservice.org
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        open-build-service-%version.tar.xz
-Source1:        find-requires.sh
 BuildRequires:  python-devel
+# needed for native extensions
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  gcc
+BuildRequires:  cyrus-sasl-devel
+BuildRequires:  glibc-devel
+BuildRequires:  libtool
+BuildRequires:  libxml2-devel
+BuildRequires:  libxslt-devel
+BuildRequires:  make
+BuildRequires:  mysql-devel
+BuildRequires:  nodejs
+BuildRequires:  openldap2-devel
+BuildRequires:  ruby2.5-devel
 # make sure this is in sync with the RAILS_GEM_VERSION specified in the
 # config/environment.rb of the various applications.
 # atm the obs rails version patch above unifies that setting among the applications
@@ -227,7 +240,6 @@ Requires:       mysql
 Requires:       ruby(abi) >= 2.0
 # needed for fulltext searching
 Requires:       sphinx >= 2.1.8
-BuildRequires:  obs-api-testsuite-deps
 BuildRequires:  rubygem(ruby-ldap)
 # For doc generation
 BuildRequires:  rubygem(i18n)
@@ -242,7 +254,191 @@ BuildRequires:  xorg-x11-server
 BuildRequires:  xorg-x11-server-extra
 # write down dependencies for production
 BuildRequires:  rubygem(bundler)
-Requires:       %(echo `bash %{S:1} %{S:0} "ruby:2.5.0" "production"`)
+Source1:        obs-server-rpmlintrc
+Source2:        Gemfile
+Source3:        Gemfile.lock
+### GEMS START
+Source100:      https://rubygems.org/downloads/actioncable-5.1.5.gem
+Source101:      https://rubygems.org/downloads/actionmailer-5.1.5.gem
+Source102:      https://rubygems.org/downloads/actionpack-5.1.5.gem
+Source103:      https://rubygems.org/downloads/actionview-5.1.5.gem
+Source104:      https://rubygems.org/downloads/activejob-5.1.5.gem
+Source105:      https://rubygems.org/downloads/activemodel-5.1.5.gem
+Source106:      https://rubygems.org/downloads/activemodel-serializers-xml-1.0.2.gem
+Source107:      https://rubygems.org/downloads/activerecord-5.1.5.gem
+Source108:      https://rubygems.org/downloads/activesupport-5.1.5.gem
+Source109:      https://rubygems.org/downloads/acts_as_list-0.9.10.gem
+Source110:      https://rubygems.org/downloads/acts_as_tree-2.7.0.gem
+Source111:      https://rubygems.org/downloads/addressable-2.5.2.gem
+Source112:      https://rubygems.org/downloads/airbrake-7.1.0.gem
+Source113:      https://rubygems.org/downloads/airbrake-ruby-2.5.0.gem
+Source114:      https://rubygems.org/downloads/amq-protocol-2.3.0.gem
+Source115:      https://rubygems.org/downloads/annotate-2.7.2.gem
+Source116:      https://rubygems.org/downloads/ansi-1.5.0.gem
+Source117:      https://rubygems.org/downloads/arel-8.0.0.gem
+Source118:      https://rubygems.org/downloads/ast-2.4.0.gem
+Source119:      https://rubygems.org/downloads/bcrypt-3.1.11.gem
+Source120:      https://rubygems.org/downloads/builder-3.2.3.gem
+Source121:      https://rubygems.org/downloads/bullet-5.7.3.gem
+Source122:      https://rubygems.org/downloads/bunny-2.9.2.gem
+Source123:      https://rubygems.org/downloads/capybara-2.18.0.gem
+Source124:      https://rubygems.org/downloads/capybara_minitest_spec-1.0.6.gem
+Source125:      https://rubygems.org/downloads/chunky_png-1.3.10.gem
+Source126:      https://rubygems.org/downloads/cliver-0.3.2.gem
+Source127:      https://rubygems.org/downloads/clockwork-2.0.3.gem
+Source128:      https://rubygems.org/downloads/cocoon-1.2.11.gem
+Source129:      https://rubygems.org/downloads/codecov-0.1.10.gem
+Source130:      https://rubygems.org/downloads/codemirror-rails-5.16.0.gem
+Source131:      https://rubygems.org/downloads/coderay-1.1.2.gem
+Source132:      https://rubygems.org/downloads/coffee-rails-4.2.2.gem
+Source133:      https://rubygems.org/downloads/coffee-script-2.4.1.gem
+Source134:      https://rubygems.org/downloads/coffee-script-source-1.12.2.gem
+Source135:      https://rubygems.org/downloads/colorize-0.8.1.gem
+Source136:      https://rubygems.org/downloads/concurrent-ruby-1.0.5.gem
+Source137:      https://rubygems.org/downloads/concurrent-ruby-ext-1.0.5.gem
+Source138:      https://rubygems.org/downloads/crack-0.4.3.gem
+Source139:      https://rubygems.org/downloads/crass-1.0.3.gem
+Source140:      https://rubygems.org/downloads/cssmin-1.0.3.gem
+Source141:      https://rubygems.org/downloads/daemons-1.2.6.gem
+Source142:      https://rubygems.org/downloads/dalli-2.7.6.gem
+Source143:      https://rubygems.org/downloads/data_migrate-3.4.0.gem
+Source144:      https://rubygems.org/downloads/database_cleaner-1.6.2.gem
+Source145:      https://rubygems.org/downloads/delayed_job-4.1.4.gem
+Source146:      https://rubygems.org/downloads/delayed_job_active_record-4.1.2.gem
+Source147:      https://rubygems.org/downloads/diff-lcs-1.3.gem
+Source148:      https://rubygems.org/downloads/docile-1.1.5.gem
+Source149:      https://rubygems.org/downloads/equatable-0.5.0.gem
+Source150:      https://rubygems.org/downloads/erubi-1.7.0.gem
+Source151:      https://rubygems.org/downloads/escape_utils-1.2.1.gem
+Source152:      https://rubygems.org/downloads/execjs-2.7.0.gem
+Source153:      https://rubygems.org/downloads/factory_bot-4.8.2.gem
+Source154:      https://rubygems.org/downloads/factory_bot_rails-4.8.2.gem
+Source155:      https://rubygems.org/downloads/faker-1.8.7.gem
+Source156:      https://rubygems.org/downloads/feature-1.4.0.gem
+Source157:      https://rubygems.org/downloads/ffi-1.9.21.gem
+Source159:      https://rubygems.org/downloads/flot-rails-0.0.7.gem
+Source160:      https://rubygems.org/downloads/font-awesome-rails-4.7.0.2.gem
+Source161:      https://rubygems.org/downloads/git-cop-2.1.0.gem
+Source162:      https://rubygems.org/downloads/globalid-0.4.1.gem
+Source163:      https://rubygems.org/downloads/gssapi-1.2.0.gem
+Source164:      https://rubygems.org/downloads/haml-5.0.4.gem
+Source165:      https://rubygems.org/downloads/haml_lint-0.27.0.gem
+Source166:      https://rubygems.org/downloads/hashdiff-0.3.7.gem
+Source167:      https://rubygems.org/downloads/i18n-0.9.5.gem
+Source168:      https://rubygems.org/downloads/innertube-1.1.0.gem
+Source169:      https://rubygems.org/downloads/joiner-0.3.4.gem
+Source170:      https://rubygems.org/downloads/jquery-datatables-rails-3.4.0.gem
+Source171:      https://rubygems.org/downloads/jquery-rails-4.3.1.gem
+Source172:      https://rubygems.org/downloads/jquery-ui-rails-4.2.1.gem
+Source173:      https://rubygems.org/downloads/json-2.1.0.gem
+Source174:      https://rubygems.org/downloads/kaminari-1.1.1.gem
+Source175:      https://rubygems.org/downloads/kaminari-actionview-1.1.1.gem
+Source176:      https://rubygems.org/downloads/kaminari-activerecord-1.1.1.gem
+Source177:      https://rubygems.org/downloads/kaminari-core-1.1.1.gem
+Source178:      https://rubygems.org/downloads/kgio-2.11.0.gem
+Source179:      https://rubygems.org/downloads/launchy-2.4.3.gem
+Source180:      https://rubygems.org/downloads/loofah-2.2.0.gem
+Source181:      https://rubygems.org/downloads/mail-2.7.0.gem
+Source182:      https://rubygems.org/downloads/metaclass-0.0.4.gem
+Source183:      https://rubygems.org/downloads/method_source-0.9.0.gem
+Source184:      https://rubygems.org/downloads/middleware-0.1.0.gem
+Source185:      https://rubygems.org/downloads/mini_mime-1.0.0.gem
+Source186:      https://rubygems.org/downloads/mini_portile2-2.3.0.gem
+Source187:      https://rubygems.org/downloads/minitest-5.11.3.gem
+Source188:      https://rubygems.org/downloads/minitest-fail-fast-0.1.0.gem
+Source189:      https://rubygems.org/downloads/minitest-reporters-1.1.19.gem
+Source190:      https://rubygems.org/downloads/mocha-1.3.0.gem
+Source191:      https://rubygems.org/downloads/momentjs-rails-2.17.1.gem
+Source192:      https://rubygems.org/downloads/mousetrap-rails-1.4.6.gem
+Source193:      https://rubygems.org/downloads/mysql2-0.4.10.gem
+Source194:      https://rubygems.org/downloads/nio4r-2.2.0.gem
+Source195:      https://rubygems.org/downloads/nokogiri-1.8.2.gem
+Source196:      https://rubygems.org/downloads/nokogumbo-1.5.0.gem
+Source197:      https://rubygems.org/downloads/nyan-cat-formatter-0.12.0.gem
+Source198:      https://rubygems.org/downloads/parallel-1.12.0.gem
+Source199:      https://rubygems.org/downloads/parser-2.5.0.2.gem
+Source200:      https://rubygems.org/downloads/pastel-0.7.2.gem
+Source201:      https://rubygems.org/downloads/path_expander-1.0.2.gem
+Source202:      https://rubygems.org/downloads/peek-1.0.1.gem
+Source203:      https://rubygems.org/downloads/peek-dalli-1.2.0.gem
+Source204:      https://rubygems.org/downloads/peek-mysql2-1.2.0.gem
+Source205:      https://rubygems.org/downloads/pkg-config-1.2.3.gem
+Source206:      https://rubygems.org/downloads/poltergeist-1.17.0.gem
+Source207:      https://rubygems.org/downloads/power_assert-1.1.1.gem
+Source208:      https://rubygems.org/downloads/powerpack-0.1.1.gem
+Source209:      https://rubygems.org/downloads/pry-0.11.3.gem
+Source210:      https://rubygems.org/downloads/public_suffix-3.0.2.gem
+Source211:      https://rubygems.org/downloads/pundit-1.1.0.gem
+Source212:      https://rubygems.org/downloads/rack-2.0.4.gem
+Source213:      https://rubygems.org/downloads/rack-test-0.8.2.gem
+Source214:      https://rubygems.org/downloads/rails-5.1.5.gem
+Source215:      https://rubygems.org/downloads/rails-controller-testing-1.0.2.gem
+Source216:      https://rubygems.org/downloads/rails-dom-testing-2.0.3.gem
+Source217:      https://rubygems.org/downloads/rails-html-sanitizer-1.0.3.gem
+Source218:      https://rubygems.org/downloads/rails_tokeninput-1.7.0.gem
+Source219:      https://rubygems.org/downloads/railties-5.1.5.gem
+Source220:      https://rubygems.org/downloads/rainbow-2.2.2.gem
+Source221:      https://rubygems.org/downloads/raindrops-0.18.0.gem
+Source222:      https://rubygems.org/downloads/rake-12.3.0.gem
+Source223:      https://rubygems.org/downloads/rantly-1.1.0.gem
+Source224:      https://rubygems.org/downloads/rb-fsevent-0.10.2.gem
+Source225:      https://rubygems.org/downloads/rb-inotify-0.9.10.gem
+Source226:      https://rubygems.org/downloads/rdoc-6.0.1.gem
+Source227:      https://rubygems.org/downloads/redcarpet-3.4.0.gem
+Source228:      https://rubygems.org/downloads/refinements-5.0.2.gem
+Source229:      https://rubygems.org/downloads/responders-2.4.0.gem
+Source230:      https://rubygems.org/downloads/riddle-2.2.0.gem
+Source231:      https://rubygems.org/downloads/rspec-3.5.0.gem
+Source232:      https://rubygems.org/downloads/rspec-core-3.5.4.gem
+Source233:      https://rubygems.org/downloads/rspec-expectations-3.5.0.gem
+Source234:      https://rubygems.org/downloads/rspec-mocks-3.5.0.gem
+Source235:      https://rubygems.org/downloads/rspec-rails-3.5.2.gem
+Source236:      https://rubygems.org/downloads/rspec-support-3.5.0.gem
+Source237:      https://rubygems.org/downloads/rubocop-0.51.0.gem
+Source238:      https://rubygems.org/downloads/rubocop-rspec-1.20.1.gem
+Source239:      https://rubygems.org/downloads/ruby-ldap-0.9.19.gem
+Source240:      https://rubygems.org/downloads/ruby-progressbar-1.9.0.gem
+Source241:      https://rubygems.org/downloads/ruby_parser-3.11.0.gem
+Source242:      https://rubygems.org/downloads/runcom-2.0.1.gem
+Source243:      https://rubygems.org/downloads/safe_yaml-1.0.4.gem
+Source244:      https://rubygems.org/downloads/sanitize-4.6.0.gem
+Source245:      https://rubygems.org/downloads/sass-3.5.3.gem
+Source246:      https://rubygems.org/downloads/sass-listen-4.0.0.gem
+Source247:      https://rubygems.org/downloads/sass-rails-5.0.7.gem
+Source248:      https://rubygems.org/downloads/sexp_processor-4.10.1.gem
+Source249:      https://rubygems.org/downloads/shoulda-matchers-3.1.2.gem
+Source250:      https://rubygems.org/downloads/simplecov-0.14.1.gem
+Source251:      https://rubygems.org/downloads/simplecov-html-0.10.1.gem
+Source252:      https://rubygems.org/downloads/single_test-0.6.0.gem
+Source253:      https://rubygems.org/downloads/sprite-factory-1.7.1.gem
+Source254:      https://rubygems.org/downloads/sprockets-3.7.1.gem
+Source255:      https://rubygems.org/downloads/sprockets-rails-3.2.1.gem
+Source256:      https://rubygems.org/downloads/sysexits-1.2.0.gem
+Source257:      https://rubygems.org/downloads/temple-0.8.0.gem
+Source258:      https://rubygems.org/downloads/test-unit-3.2.7.gem
+Source259:      https://rubygems.org/downloads/thinking-sphinx-3.4.2.gem
+Source260:      https://rubygems.org/downloads/thor-0.20.0.gem
+Source261:      https://rubygems.org/downloads/thread_safe-0.3.6.gem
+Source262:      https://rubygems.org/downloads/tilt-2.0.8.gem
+Source263:      https://rubygems.org/downloads/timecop-0.9.1.gem
+Source264:      https://rubygems.org/downloads/tty-color-0.4.2.gem
+Source265:      https://rubygems.org/downloads/tzinfo-1.2.5.gem
+Source266:      https://rubygems.org/downloads/uglifier-4.1.6.gem
+Source267:      https://rubygems.org/downloads/unicode-display_width-1.3.0.gem
+Source268:      https://rubygems.org/downloads/unicorn-5.3.0.gem
+Source269:      https://rubygems.org/downloads/unicorn-rails-2.2.1.gem
+Source270:      https://rubygems.org/downloads/uniform_notifier-1.11.0.gem
+Source271:      https://rubygems.org/downloads/url-0.3.2.gem
+Source272:      https://rubygems.org/downloads/vcr-4.0.0.gem
+Source273:      https://rubygems.org/downloads/voight_kampff-1.1.2.gem
+Source274:      https://rubygems.org/downloads/webmock-3.3.0.gem
+Source275:      https://rubygems.org/downloads/websocket-driver-0.6.5.gem
+Source276:      https://rubygems.org/downloads/websocket-extensions-0.1.3.gem
+Source277:      https://rubygems.org/downloads/xmlhash-1.3.7.gem
+Source278:      https://rubygems.org/downloads/xmlrpc-0.3.0.gem
+Source279:      https://rubygems.org/downloads/xpath-3.0.0.gem
+Source280:      https://rubygems.org/downloads/yajl-ruby-1.3.1.gem
+### GEMS END
 # for rebuild_time
 Requires:       perl(GD)
 
@@ -298,6 +494,9 @@ This package contains all the necessary tools for upload images to the cloud.
 
 #--------------------------------------------------------------------------------
 %prep
+# Ensure there are ruby, gem and irb commands without ruby suffix
+mkdir ~/bin
+for i in ruby gem irb; do ln -s /usr/bin/$i.ruby2.5 ~/bin/$i; done
 
 %setup -q -n open-build-service-%version
 
@@ -309,8 +508,18 @@ rm src/api/Dockerfile.frontend-base
 rm -rf src/backend/build
 
 find -name .keep -o -name .gitignore | xargs rm -rf
+# copy gem files into cache
+mkdir -p src/api/vendor/cache
+cp %{_sourcedir}/*.gem src/api/vendor/cache
 
 %build
+export PATH=~/bin:$PATH
+export GEM_HOME=~/.gems
+pushd src/api/
+bundle config build.nokogiri --use-system-libraries
+bundle --local --path %{buildroot}/%_libdir/obs-api/
+popd
+
 export DESTDIR=$RPM_BUILD_ROOT
 # we need it for the test suite or it may silently succeed
 test -x /usr/bin/Xvfb
