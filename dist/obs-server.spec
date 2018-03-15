@@ -543,6 +543,25 @@ export DESTDIR=$RPM_BUILD_ROOT
   perl -p -i -e 's/^APACHE_GROUP=.*/APACHE_GROUP=apache/' Makefile.include
 %endif
 
+# run gem clean up script
+/usr/lib/rpm/gem_build_cleanup.sh %{buildroot}/%_libdir/obs-api/ruby/*/
+# remove cached gems
+rm -rf src/api/vendor/cache/*
+# the examples folder contains a broken symlink which causes fdupes to fail
+rm -rf %{buildroot}/%_libdir/obs-api/ruby/*/gems/database_cleaner-*/examples
+# remove ffi backup file
+rm -rf %{buildroot}/%_libdir/obs-api/ruby/*/gems/ffi-*/ext/ffi_c/libffi/fficonfig.h.in~
+# fix broken symlink
+pushd %{buildroot}/%_libdir/obs-api/ruby/*/gems/ffi-*/ext/ffi_c/libffi-*linux-gnu/include
+ln -sf ../../libffi/src/x86/ffitarget.h ffitarget.h
+popd
+# Patch from unicorn gem
+sed -i 's/\/this\/will\/be\/overwritten\/or\/wrapped\/anyways\/do\/not\/worry\/ruby/\/usr\/bin\/ruby/' %{buildroot}/%_libdir/obs-api/ruby/*/gems/unicorn*/bin/unicorn
+sed -i 's/\/this\/will\/be\/overwritten\/or\/wrapped\/anyways\/do\/not\/worry\/ruby/\/usr\/bin\/ruby/' %{buildroot}/%_libdir/obs-api/ruby/*/gems/unicorn*/bin/unicorn_rails
+# Patch from diff-lcs gem
+sed -i 's/#!ruby -w/#!\/usr\/bin\/ruby -w/' %{buildroot}/%_libdir/obs-api/ruby/*/gems/diff-lcs*/bin/htmldiff
+sed -i 's/#!ruby -w/#!\/usr\/bin\/ruby -w/' %{buildroot}/%_libdir/obs-api/ruby/*/gems/diff-lcs*/bin/ldiff
+
 export OBS_VERSION="%{version}"
 DESTDIR=%{buildroot} make install FILLUPDIR=%{_fillupdir}
 if [ -f %{_sourcedir}/open-build-service.obsinfo ]; then
