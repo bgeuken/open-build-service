@@ -575,6 +575,7 @@ fi
 # There's dupes between webui and api:
 %if 0%{?suse_version} >= 1030
 %fdupes $RPM_BUILD_ROOT/srv/www/obs
+%fdupes $RPM_BUILD_ROOT/%_libdir/obs-api
 %endif
 
 # fix build for SLE 11
