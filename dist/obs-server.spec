@@ -906,6 +906,7 @@ usermod -a -G docker obsservicerun
 /srv/www/obs/api/config/locales
 %dir /srv/www/obs/api/vendor
 /srv/www/obs/api/vendor/diststats
+%_libdir/obs-api/
 
 #
 # some files below config actually are _not_ config files
