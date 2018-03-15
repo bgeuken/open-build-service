@@ -101,7 +101,6 @@ BuildRequires:  procps
 # Required by the test suite (contains /usr/bin/Xvfb)
 BuildRequires:  xorg-x11-server
 PreReq:         /usr/sbin/useradd /usr/sbin/groupadd
-BuildArch:      noarch
 Requires(pre):  obs-common
 Requires:       build >= 20170315
 Requires:       perl-BSSolv >= 0.28
