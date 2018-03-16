@@ -241,9 +241,9 @@ Requires:       ruby(abi) >= 2.0
 # needed for fulltext searching
 Requires:       sphinx >= 2.1.8
 BuildRequires:       sphinx >= 2.1.8
-BuildRequires:  rubygem(ruby-ldap)
+BuildRequires:  rubygem(ruby:2.5.0:ruby-ldap)
 # For doc generation
-BuildRequires:  rubygem(i18n)
+BuildRequires:  rubygem(ruby:2.5.0:i18n)
 # for test suite:
 BuildRequires:  createrepo
 BuildRequires:  curl
@@ -254,7 +254,7 @@ BuildRequires:  xorg-x11-Xvnc
 BuildRequires:  xorg-x11-server
 BuildRequires:  xorg-x11-server-extra
 # write down dependencies for production
-BuildRequires:  rubygem(bundler)
+BuildRequires:  rubygem(ruby:2.5.0:bundler)
 Source1:        obs-server-rpmlintrc
 Source2:        Gemfile
 Source3:        Gemfile.lock
