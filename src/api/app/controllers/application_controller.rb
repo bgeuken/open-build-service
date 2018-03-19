@@ -85,10 +85,16 @@ class ApplicationController < ActionController::Base
 
   protected
 
+  def feature_active?(feature)
+    return if Feature.active?(feature)
+    render_error status: 404
+  end
+
   def validate_params
     params.each do |key, value|
       next if value.nil?
       next if key == 'xmlhash' # perfectly fine
+      next if value.is_a? ActionController::Parameters
       unless value.is_a? String
         raise InvalidParameterError, "Parameter #{key} has non String class #{value.class}"
       end
