@@ -352,8 +352,8 @@ touch %{buildroot}/%{secret_key_file}
 chmod 0640 %{buildroot}/%{secret_key_file}
 %endif
 
-# drop testcases for now
-rm -rf %{buildroot}/srv/www/obs/api/spec
+# Only run policy and feature tests
+rm -rf %{buildroot}/srv/www/obs/api/spec/{controllers,models,routes,mailers}
 
 # fail when Makefiles created a directory
 if ! test -L %{buildroot}/usr/lib/obs/server/build; then
@@ -399,14 +399,22 @@ done
 bash $RPM_BUILD_DIR/open-build-service-%version/src/backend/testdata/test_dispatcher || exit 1
 popd
 
-make -C src/backend test
+#make -C src/backend test
 %endif
 
 ####
 # start api testing
 #
 %if 0%{?disable_obs_frontend_test_suite:1} < 1
+echo "spec tests"
+set -x
+#%if 0%{!?enable_all_tests}
+echo `pwd`
+rm -rf src/api/test/{controllers,functional,unit,mailers,helpers,integration,policies}
+rm -rf src/api/spec/cassettes
+#%endif
 make -C src/api test
+set +x
 %endif
 
 ####
@@ -662,6 +670,7 @@ usermod -a -G docker obsservicerun
 /srv/www/obs/api/script
 /srv/www/obs/api/bin
 /srv/www/obs/api/test
+/srv/www/obs/api/spec
 /srv/www/obs/docs
 
 

@@ -74,9 +74,17 @@ bundle.ruby2.5 exec rake.ruby2.5 db:migrate:with_data db:structure:dump db:drop 
 export RAILS_ENV=test
 bundle.ruby2.5 exec rake.ruby2.5 db:create db:setup || exit 1
 
+echo "Precompiling assets"
+bundle.ruby2.5 exec rails assets:precompile > /dev/null
+
+echo `pwd`
 for suite in "rake.ruby2.5 test:api" "rake.ruby2.5 test:spider" "rspec"; do
+  if [ "$suite" != "rspec" ] && [ ! -d test ]; then
+    echo "Skipping test - test directory not found"
+    continue
+  fi
+
   rm -f log/test.log
-  bundle.ruby2.5 exec rails assets:precompile
 
   # Configure the frontend<->backend connection settings
   if [ "$suite" = "rspec" ]; then

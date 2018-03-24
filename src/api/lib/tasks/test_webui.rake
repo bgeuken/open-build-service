@@ -15,7 +15,8 @@ end
 Rake::TestTask.new do |t|
   t.libs << 'test'
   proxy_mode_files = FileList.new
-  t.test_files = proxy_mode_files.include('test/functional/webui/spider_test.rb')
+  spider_test = 'test/functional/webui/spider_test.rb'
+  t.test_files = proxy_mode_files.include(spider_test) if File.exist?(spider_test)
   t.name = 'test:spider'
   t.warning = false
 end
