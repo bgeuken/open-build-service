@@ -72,6 +72,7 @@ gem 'bunny'
 gem 'data_migrate', '= 3.5.0'
 # for URI encoding
 gem 'addressable'
+gem 'semantic-ui-sass'
 
 group :development, :production do
   # to have the delayed job daemon
