@@ -2,6 +2,7 @@
      User Global Variables
 *******************************/
 
+// https://github.com/Semantic-Org/Semantic-UI/tree/master/src#config-files
 @green: #690;
 
 @primary: $green;
@@ -13,6 +14,15 @@
 @linkHoverColor: $primary;
 
 @subtleShadow: 0px 1px 3px 0 #ccc;
+
+// @iconWidth: 1.18em;
+// @fontSize: 1em;
+// $breadcrumb-item-active-color:@lightBlack
+
+
+//@hoveredTextColor: #690;
+//@blueHover: #690;
+//@whiteHover: #690;
 
 @borderColor: #ddd #ccc #bbb;
 
