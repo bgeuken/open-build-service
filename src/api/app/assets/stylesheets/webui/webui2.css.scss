@@ -1,0 +1,63 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require dataTables/jquery.dataTables
+ *= require token-input
+ *= require token-input-facebook
+ *= require codemirror
+ *= require mousetrap
+ *= require peek
+ *= require webui/application/cm2.css.scss
+ *= require webui/application/icons.css.scss
+ *= require webui/application/datatable.css.scss
+ *= require semantic_ui/semantic_ui
+*/
+
+//$breadcrumb-item-color: rgb(102, 102, 102);
+//$breadcrumb-item-active-color: #333;
+//$title-color: rgb(102, 153, 0);
+
+.navigation-links a {
+  color: #690;
+}
+
+.navigation-links a:hover {
+  color: #069;
+}
+
+
+a:hover {
+  color: #690;
+}
+
+
+.ui.menu.topbar {
+  background: #666 url(/assets/images/gradient-dark-nav-1c05ee904a2aceafe91aa64808d9f14b1e7f327865d63f8b9091da2b1aa7628d.png) repeat-x scroll bottom left;
+//  font-size: 1rem;
+  font-size: 100%;
+  border-radius: 0;
+  height: 30px !important;
+  line-height: 150%;
+  font-weight: bold;
+  margin-bottom: 1px;
+}
+
+.ui.menu.topbar > .item {
+  font-size: 108%;
+  font-weight: bolder;
+
+}
+
+.ui.top.attached.label {
+  background: #fff url(/assets/images/gradient-light-8a36729be38f4f9a8c793d438d0646ee50b257566823c0588e1675ed5ee7a46d.png) repeat-x scroll 0 -25px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: 1px solid #ddd;
+}
