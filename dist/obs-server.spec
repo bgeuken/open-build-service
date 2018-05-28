@@ -785,4 +785,6 @@ to localhost.
 %dir /srv/www/obs/container-registry/htdocs
 %config /etc/apache2/vhosts.d/obs-container-registry.conf
 
-%changelog
+%changelog -n obs-api
+%changelog -n obs-worker
+%changelog -n obs-common
