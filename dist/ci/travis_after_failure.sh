@@ -8,5 +8,9 @@ function upload_files {
   done
 }
 
-pushd src/api/log
+set -x
+ls -ln ..
+ls -ln /tmp
+
+pushd /obs/src/api/log
 upload_files
