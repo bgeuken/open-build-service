@@ -17,6 +17,9 @@ if test -z "$SUBTEST"; then
       ;;
     rspec)
       rake docker:test:rspec
+      set -x
+      ls -ln /obs/src/api/tmp/capybara
+      set +x
       ;;
     backend)
       rake docker:test:backend
