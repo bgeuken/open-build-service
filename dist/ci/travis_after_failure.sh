@@ -1,7 +1,7 @@
 #!/bin/bash
 
-function upload_files {
-  for file in *; do
+function upload_files(files) {
+  for file in $files; do
     echo -n "Uploading $file ->   "
     curl --upload-file ./$file https://transfer.sh/${TRAVIS_BUILD_NUMBER}-${TRAVIS_JOB_NUMBER}_${file}
     echo "   ...done!"
@@ -9,6 +9,5 @@ function upload_files {
 }
 
 if [ -e /obs/src/api/log ]; then
-  pushd /obs/src/api/log
-  upload_files
+  upload_files(/obs/src/api/log/*)
 fi
