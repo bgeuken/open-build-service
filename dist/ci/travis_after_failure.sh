@@ -8,5 +8,5 @@ function upload_files {
   done
 }
 
-pushd api/log || exit 1
+pushd /obs/src/api/log || exit 1
 upload_files
