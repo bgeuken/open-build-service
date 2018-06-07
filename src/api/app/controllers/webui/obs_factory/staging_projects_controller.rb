@@ -11,10 +11,10 @@ module Webui::ObsFactory
           @staging_projects = ::ObsFactory::StagingProjectPresenter.sort(@distribution.staging_projects_all)
           @backlog_requests = ::ObsFactory::Request.with_open_reviews_for(by_group: @distribution.staging_manager, target_project: @distribution.name)
           @requests_state_new = ::ObsFactory::Request.in_state_new(by_group: @distribution.staging_manager, target_project: @distribution.name)
-          file = PackageFile.new(
-            project_name: "#{params[:project]}:Staging",
-            package_name: "dashboard",
-            name: "ignored_requests")
+
+          staging_project = Project.find_by_name("#{@distribution.project}:Staging")
+
+          file = ::Backend::Api::Sources::Package.file(staging_project.name, 'dashboard', 'ignored_requests')
           unless file.to_s.nil?
             @ignored_requests = YAML.load(file.to_s)
           end
