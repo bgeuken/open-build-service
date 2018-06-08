@@ -255,7 +255,6 @@ BuildRequires:  xorg-x11-server
 BuildRequires:  xorg-x11-server-extra
 # write down dependencies for production
 BuildRequires:  rubygem(ruby:2.5.0:bundler)
-Source1:        obs-server-rpmlintrc
 Source2:        Gemfile
 Source3:        Gemfile.lock
 # for rebuild_time
@@ -329,13 +328,18 @@ rm -rf src/backend/build
 find -name .keep -o -name .gitignore | xargs rm -rf
 # copy gem files into cache
 mkdir -p src/api/vendor/cache
+echo `find %{_sourcedir} -name *.gem`
 cp %{_sourcedir}/vendor/bundle/vendor/cache/*.gem src/api/vendor/cache
+#cp %{_sourcedir}/*.gem src/api/vendor/cache
+#cp %{_sourcedir}/vendor/bundle/vendor/cache/*.gem src/api/vendor/cache
+#cp %{_sourcedir}/vendor/bundle/vendor/cache/*.gem %{_sourcedir}
 
 %build
 export PATH=~/bin:$PATH
 export GEM_HOME=~/.gems
 pushd src/api/
 bundle config build.nokogiri --use-system-libraries
+ls -ln vendor/cache
 bundle --local --path %{buildroot}/%_libdir/obs-api/
 popd
 
