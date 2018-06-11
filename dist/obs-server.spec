@@ -329,7 +329,6 @@ rm -rf src/backend/build
 mkdir -p src/api/vendor/cache
 echo `find %{_sourcedir} -name *.gem`
 cp %{_sourcedir}/vendor/bundle/vendor/cache/*.gem src/api/vendor/cache
-find -name .keep -o -name .gitignore | xargs rm -rf
 #cp %{_sourcedir}/*.gem src/api/vendor/cache
 #cp %{_sourcedir}/vendor/bundle/vendor/cache/*.gem src/api/vendor/cache
 #cp %{_sourcedir}/vendor/bundle/vendor/cache/*.gem %{_sourcedir}
@@ -383,6 +382,9 @@ sed -i 's/\/this\/will\/be\/overwritten\/or\/wrapped\/anyways\/do\/not\/worry\/r
 # Patch from diff-lcs gem
 sed -i 's/#!ruby -w/#!\/usr\/bin\/ruby -w/' %{buildroot}/%_libdir/obs-api/ruby/*/gems/diff-lcs*/bin/htmldiff
 sed -i 's/#!ruby -w/#!\/usr\/bin\/ruby -w/' %{buildroot}/%_libdir/obs-api/ruby/*/gems/diff-lcs*/bin/ldiff
+
+# Cleanup
+find %{buildroot}/%_libdir -name .keep -o -name .gitignore | xargs rm -rf
 
 export OBS_VERSION="%{version}"
 DESTDIR=%{buildroot} make install FILLUPDIR=%{_fillupdir}
