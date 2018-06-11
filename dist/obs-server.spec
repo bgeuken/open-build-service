@@ -325,11 +325,11 @@ rm src/api/Dockerfile.frontend-base
 # drop build script, we require the installed one from own package
 rm -rf src/backend/build
 
-find -name .keep -o -name .gitignore | xargs rm -rf
 # copy gem files into cache
 mkdir -p src/api/vendor/cache
 echo `find %{_sourcedir} -name *.gem`
 cp %{_sourcedir}/vendor/bundle/vendor/cache/*.gem src/api/vendor/cache
+find -name .keep -o -name .gitignore | xargs rm -rf
 #cp %{_sourcedir}/*.gem src/api/vendor/cache
 #cp %{_sourcedir}/vendor/bundle/vendor/cache/*.gem src/api/vendor/cache
 #cp %{_sourcedir}/vendor/bundle/vendor/cache/*.gem %{_sourcedir}
