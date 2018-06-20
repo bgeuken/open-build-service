@@ -1,5 +1,17 @@
-inherit_from: ../../.rubocop.yml
+require: rubocop-rspec
+
+inherit_from: .rubocop_todo.yml
 
 AllCops:
   UseCache: true
-  CacheRootDirectory: tmp/rubocop_cache
+  CacheRootDirectory: tmp/rubocop_cache_rails_dir
+  MaxFilesInCache: 2000
+  Exclude:
+    - 'tmp/**/*'
+    - 'lib/templates/**/*'
+    - 'vendor/bundle/**/*'
+    - 'test/fixtures/backend/**/*'
+    - 'files/*'
+    - 'db/data_schema.rb'
+
+
