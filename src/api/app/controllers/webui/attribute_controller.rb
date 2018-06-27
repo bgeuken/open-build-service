@@ -9,7 +9,7 @@ class Webui::AttributeController < Webui::WebuiController
   helper 'webui/project'
 
   def index
-    @attributes = @container.attribs
+    @attributes = @container.attribs.includes(:values, :attrib_issues, :issues, attrib_type: [:attrib_namespace])
   end
 
   def new
