@@ -91,6 +91,7 @@ class BsRequest < ApplicationRecord
   validates_associated :bs_request_actions, message: ->(_, record) { record[:value].map { |r| r.errors.full_messages }.flatten.to_sentence }
 
   before_update :send_state_change
+  before_validation :sanitize!
   after_commit :update_cache
 
   def self.delayed_auto_accept
@@ -256,10 +257,8 @@ class BsRequest < ApplicationRecord
   private_class_method :sourcediff_has_shown_attribute?
 
   def save!(args = {})
-    new = created_at ? nil : 1
-    sanitize! if new && !@skip_sanitize
     super
-    notify if new
+    notify if new_record?
   end
 
   def history_elements
@@ -961,6 +960,7 @@ class BsRequest < ApplicationRecord
   end
 
   def sanitize!
+    return if persisted?
     # apply default values, expand and do permission checks
     self.creator ||= User.current.login
     self.commenter ||= User.current.login
