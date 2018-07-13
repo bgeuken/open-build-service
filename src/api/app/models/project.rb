@@ -31,6 +31,7 @@ class Project < ApplicationRecord
           "admin rights are required to raise the protection level of a project (it won't be safe anyway)")
   end
 
+  before_create :set_parent
   before_destroy :cleanup_before_destroy
   after_destroy_commit :delete_on_backend
 
@@ -93,6 +94,9 @@ class Project < ApplicationRecord
 
   has_many :target_of_bs_request_actions, class_name: 'BsRequestAction', foreign_key: 'target_project_id'
   has_many :target_of_bs_requests, through: :target_of_bs_request_actions, source: :bs_request
+
+  has_many :childprojects, foreign_key: 'parent_id', class_name: 'Project'
+  belongs_to :parent, inverse_of: :childprojects, class_name: 'Project'
 
   default_scope { where('projects.id not in (?)', Relationship.forbidden_project_ids) }
 
@@ -251,20 +255,13 @@ class Project < ApplicationRecord
   end
 
   def subprojects
-    Project.where('name like ?', "#{name}:%")
+    childprojects + childprojects.map(&:subprojects).flatten
   end
 
   def siblingprojects
-    parent_name = parent.try(:name)
-    siblings = []
-    if parent_name
-      Project.where('name like (?) and name != (?)', "#{parent_name}:%", name).order(:name).each do |sib|
-        # Skip if any of the possible ancestor projects exists
-        next if sib.possible_ancestor_names[0...-1].find { |prj| Project.where(name: prj).exists? }
-        siblings << sib
-      end
-    end
-    siblings
+    Project.where(parent: parent).where.not(parent: nil).where.not(id: self)
+    # return Project.none unless parent
+    # parent.childprojects - [self]
   end
 
   def maintained_project_names
@@ -673,7 +670,7 @@ class Project < ApplicationRecord
   private :reset_cache # whoever changes the project, needs to store it too
 
   # Give me the first ancestor of that project
-  def parent
+  def _parent
     project = nil
     possible_ancestor_names.find do |name|
       project = Project.find_by(name: name)
@@ -681,9 +678,14 @@ class Project < ApplicationRecord
     project
   end
 
+  def set_parent
+    self.parent ||= _parent
+  end
+
   # Give me all the projects that are ancestors of that project
   def ancestors
-    Project.where(name: possible_ancestor_names)
+    return Project.none unless parent
+    [parent] + parent.ancestors
   end
 
   # Calculate all possible ancestors names for a project

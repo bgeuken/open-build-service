@@ -60,4 +60,24 @@ RSpec.describe Project do
       expect(sub_project_d.subprojects).to be_empty
     end
   end
+
+  describe '#childprojects' do
+    let!(:project_a) { create(:project, name: 'A') }
+    let!(:sub_project_b) { create(:project, name: 'A:B') }
+    let!(:sub_project_b_1) { create(:project, name: 'A:B:1') }
+    let!(:sub_project_b_2) { create(:project, name: 'A:B:2') }
+
+    it 'returns only direct subprojects of a project' do
+      expect(project_a.childprojects).to contain_exactly(sub_project_b)
+      expect(sub_project_b.childprojects).to contain_exactly(sub_project_b_1, sub_project_b_2)
+    end
+  end
+
+  describe '#set_parent callback' do
+    let!(:project_a) { create(:project, name: 'A') }
+
+    subject { create(:project, name: 'A:B') }
+
+    it { expect(subject.parent).to eq(project_a) }
+  end
 end

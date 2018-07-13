@@ -933,6 +933,7 @@ CREATE TABLE `projects` (
   `delta` tinyint(1) NOT NULL DEFAULT '1',
   `kind` enum('standard','maintenance','maintenance_incident','maintenance_release') COLLATE utf8_bin DEFAULT 'standard',
   `url` varchar(255) COLLATE utf8_bin DEFAULT NULL,
+  `parent_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `projects_name_index` (`name`) USING BTREE,
   KEY `updated_at_index` (`updated_at`) USING BTREE,
@@ -1332,6 +1333,7 @@ INSERT INTO `schema_migrations` (version) VALUES
 ('20180221175514'),
 ('20180307074538'),
 ('20180516074538'),
-('20180523123532');
+('20180523123532'),
+('20180712191554');
 
 
