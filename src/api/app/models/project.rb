@@ -259,8 +259,9 @@ class Project < ApplicationRecord
     siblings = []
     if parent_name
       Project.where('name like (?) and name != (?)', "#{parent_name}:%", name).order(:name).each do |sib|
-        sib_parent = sib.possible_ancestor_names.first
-        siblings << sib if sib_parent == parent_name
+        # Skip if any of the possible ancestor projects exists
+        next if sib.possible_ancestor_names[0...-1].find { |prj| Project.where(name: prj).exists? }
+        siblings << sib
       end
     end
     siblings
@@ -673,7 +674,11 @@ class Project < ApplicationRecord
 
   # Give me the first ancestor of that project
   def parent
-    ancestors.order(name: :desc).first
+    project = nil
+    possible_ancestor_names.find do |name|
+      project = Project.find_by(name: name)
+    end
+    project
   end
 
   # Give me all the projects that are ancestors of that project
