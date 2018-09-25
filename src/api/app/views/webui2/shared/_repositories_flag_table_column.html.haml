@@ -1,0 +1,5 @@
+- remote = flag.has_children ? false : true
+%div{ id: "#{flag.fullname}" }
+  %div{ data: { html: 'true', toggle: 'popover', placement: 'left',
+  content: "#{render partial: 'shared/flag_popover', locals: { flag: flag, project: @project, package: @package, remote: remote }}" } }
+    %i.fas{ class: flag.default_status == 'disable' ? 'fa-ban text-danger' : 'fa-check text-primary' }

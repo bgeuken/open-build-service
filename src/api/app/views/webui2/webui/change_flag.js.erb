@@ -1,0 +1,2 @@
+$( "#<%= @flag.fullname %>".replace(/\./g, '\\.') ).replaceWith("<%= escape_javascript(render partial: 'webui2/shared/repositories_flag_table_column', :locals => { flag: @flag }) %>");
+$( ".spinner").hide();

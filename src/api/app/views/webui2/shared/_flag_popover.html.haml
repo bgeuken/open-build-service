@@ -1,0 +1,34 @@
+- if flag.new_record?
+  %div
+    = link_to({controller: 'repositories', action: 'create_flag', project: project,
+      package: package, flag: flag.flag, status: 'disable', repository: flag.repo, architecture: flag.arch},
+      method: :post, remote: remote) do
+      %i.fas.fa-ban.text-danger
+      Disable
+
+  %div.pt-2
+    = link_to({ controller: 'repositories', action: 'create_flag', project: project,
+      package: package, flag: flag.flag, status: 'enable', repository: flag.repo, architecture: flag.arch},
+      method: :post, remote: remote) do
+      %i.fas.fa-check.text-primary
+      Enable
+- else
+  - if flag.status == 'enable'
+    %div
+      = link_to({ controller: 'repositories', action: 'toggle_flag', project: project,
+        package: package, flag: flag}, class: "fa icon-#{flag.flag}_disable_blue", method: :put, remote: remote) do
+        %i.fas.fa-ban.text-danger
+        Disable
+
+  - else
+    %div
+      = link_to({ controller: 'repositories', action: 'toggle_flag', project: project,
+        package: package, flag: flag}, method: :put, remote: remote) do
+        %i.fas.fa-check.text-primary
+        Enable
+
+  %div.pt-2
+    = link_to({ controller: 'repositories', action: 'remove_flag', project: project,
+      package: package, flag: flag}, method: :delete, remote: remote) do
+      %i.fas{ class: flag.default_status == 'disable' ? 'fa-ban text-danger' : 'fa-check text-primary' }
+      = "Take default (#{flag.default_status})"
