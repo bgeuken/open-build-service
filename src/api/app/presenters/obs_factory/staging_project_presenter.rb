@@ -45,6 +45,7 @@ module ObsFactory
       end
     end
 
+
     # List of requests/packages tracked in the staging project
     def classified_requests
       return @classified_requests if @classified_requests
@@ -106,6 +107,12 @@ module ObsFactory
     def failed_status_checks
       checks.select { |check| check.failed? }
     end
+
+    # TODO: Check if this is what we need for the review percentage
+#   x = missing_reviews.map(&:number)
+#   requests.select do |req|
+#     x.inlcude?(req.number)
+#   end
 
     # return a percentage counting the reviewed requests / total requests
     def review_percentage

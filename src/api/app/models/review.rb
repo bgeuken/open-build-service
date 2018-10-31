@@ -233,6 +233,7 @@ class Review < ApplicationRecord
   end
 
   def validate_reviewer_fields
+    # FIXME: This doesn't check if by_project and by_package are both present
     (by_user && (by_group || by_project || by_package)) || (by_group && (by_project || by_package))
   end
 
