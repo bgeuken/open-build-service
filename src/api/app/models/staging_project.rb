@@ -1,13 +1,19 @@
 class StagingProject < Project
   # TODO: Make sure that we aren't fetching those requests over and over again when using this association
-  has_many :staged_requests, class_name: 'BsRequest', foreign_key: :project_id
+  has_many :staged_requests, class_name: 'BsRequest', foreign_key: :staging_project_id
+  belongs_to :staging_workflow, inverse_of: :staging_projects
+
 
   def untracked_requests
-    open_requests - staged_requests
+    requests_to_review - staged_requests
   end
 
-  def open_requests
-    @open_requests ||= BsRequest.with_open_reviews_for(by_project: name)
+  # The difference between staged requests and requests to review is that staged requests are assigned to the staging project.
+  # The requests to review are requests which are not related to the staging project (unless they are also staged).
+  # They simply need a review from the maintainers of the staging project.
+  # TODO: Why is this important in the context of the staging project???
+  def requests_to_review
+    @requests_to_review ||= BsRequest.with_open_reviews_for(by_project: name)
   end
 
   def build_state
@@ -20,10 +26,12 @@ class StagingProject < Project
   end
 
   def building_repositories
+    set_buildinfo if @building_repositories.nil?
     @building_repositories
   end
 
   def broken_packages
+    set_buildinfo if @broken_packages.nil?
     @broken_packages
   end
 
@@ -78,24 +86,24 @@ class StagingProject < Project
   end
 
   # TODO: This should be an association to the review model
+  # has_many :missing_reviews, through: :staged_requests, class_name: 'Review', foreign_key: :bs_request_id
   def missing_reviews
-    # TODO: Is this if needed?
-    if @missing_reviews.nil?
-      @missing_reviews = []
-      attribs = [:by_group, :by_user, :by_project, :by_package]
+    return @missing_reviews unless @missing_reviews.nil?
 
-      (open_requests + staged_requests).uniq.each do |req|
-        req.reviews.each do |rev|
-          next if rev.state.to_s == 'accepted' || rev.by_project == name
-          # FIXME: this loop (and the inner if) would not be needed
-          # if every review only has one valid by_xxx.
-          # I'm keeping it to mimic the python implementation.
-          # Instead, we could have something like
-          # who = rev.by_group || rev.by_user || rev.by_project || rev.by_package
-          attribs.each do |att|
-            if who = rev.send(att)
-              @missing_reviews << { id: rev.id, request: req.number, state: rev.state.to_s, package: req.first_target_package, by: who }
-            end
+    @missing_reviews = []
+    attribs = [:by_group, :by_user, :by_project, :by_package]
+
+    (requests_to_review + staged_requests).uniq.each do |request|
+      request.reviews.each do |review|
+        next if review.state.to_s == 'accepted' || review.by_project == name
+        # FIXME: this loop (and the inner if) would not be needed
+        # if every review only has one valid by_xxx.
+        # I'm keeping it to mimic the python implementation.
+        # Instead, we could have something like
+        # who = review.by_group || review.by_user || review.by_project || review.by_package
+        attribs.each do |att|
+          if who = review.send(att)
+            @missing_reviews << { id: review.id, request: request.number, state: review.state.to_s, package: request.first_target_package, by: who }
           end
         end
       end
@@ -117,8 +125,12 @@ class StagingProject < Project
     @state = build_state
 
     if @state == :acceptable
-      # TODO: Replace with the Status API
-      # @state = openqa_state
+      # TODO: Once the following PR is merged, rebase on master and use the status API instead of directly checking openQA
+      #       https://github.com/openSUSE/open-build-service/pull/6119
+      # use this: return @state = check_state
+
+      # TODO: Remove this obsolete line when the TODO above is done
+      return @state = :testing
     end
 
     if @state == :acceptable && missing_reviews.present?

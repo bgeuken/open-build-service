@@ -6,22 +6,33 @@
       = render(partial: 'webui2/webui/project/tabs', locals: { project: @project })
       .card-body
         %h3= @pagetitle
-        .table-responsive
-          %table.table.table-striped.table-bordered.table-sm#staging-projects-table
-            %thead
-              %tr.text-center
-                %th Project
-                %th Requests
-                %th Problems
-            %tbody
-              - @staging_workflow.staging_projects.each do |staging_project|
-                %tr
-                  %td
-                    = render partial: 'overall_state', locals: { project: staging_project }
-                  %td
-                    = render partial: 'packages_list', locals: { project: staging_project }
-                  %td.broken-packages
-                    = render partial: 'problems', locals: { project: staging_project }
+        %table.table.table-striped.table-bordered.table-sm.responsive#staging-projects-table
+          %thead
+            %tr.text-center
+              %th Project
+              %th Requests
+              %th Problems
+          %tbody
+            - @staging_workflow.staging_projects.each do |staging_project|
+              %tr
+                %td.text-center
+                  - # TODO: Make this a link
+                  = staging_project.name[/\A.*:Staging:(.*)/, 1]
+                  %br
+                  = staging_project.overall_state
+                  %br
+                  = progress(staging_project)
+                %td
+                  = render partial: 'packages_list', locals: { project: staging_project }
+                %td.broken-packages
+                  = render partial: 'problems', locals: { project: staging_project }
   .col-xl-2
     = render partial: 'legend'
     = render partial: 'infos'
+
+
+
+:javascript
+  $('#staging-projects-table').DataTable({
+    responsive: true
+  });

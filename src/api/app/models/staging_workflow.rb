@@ -24,7 +24,7 @@ class StagingWorkflow < ApplicationRecord
   def init_staging_projects
     return unless new_record?
     ['A', 'B'].each do |letter|
-      staging_projects << Project.find_or_initialize_by(name: "#{project.name}:Staging:#{letter}")
+      staging_projects << StagingProject.find_or_initialize_by(name: "#{project.name}:Staging:#{letter}")
     end
   end
 end
