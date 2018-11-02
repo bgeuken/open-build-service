@@ -17,7 +17,7 @@ class StagingProject < Project
   end
 
   def build_state
-    set_buildinfo
+    get_buildinfo
 
     return :building if building_repositories.present?
     return :failed if broken_packages.present?
@@ -26,18 +26,18 @@ class StagingProject < Project
   end
 
   def building_repositories
-    set_buildinfo if @building_repositories.nil?
+    get_buildinfo if @building_repositories.nil?
     @building_repositories
   end
 
   def broken_packages
-    set_buildinfo if @broken_packages.nil?
+    get_buildinfo if @broken_packages.nil?
     @broken_packages
   end
 
   # TODO: Move to lib
-  def set_buildinfo
-    buildresult = Xmlhash.parse(Backend::Api::BuildResults::Status.failed_results(name))
+  def get_buildinfo
+    buildresult = Buildresult.find_hashed(project: name, view: 'summary')
 
     @broken_packages = []
     @building_repositories = []
@@ -59,16 +59,10 @@ class StagingProject < Project
       end
 
       if building
-        # determine build summary
         current_repo = result.slice('repository', 'arch', 'code', 'state', 'dirty')
         current_repo[:tobuild] = 0
         current_repo[:final] = 0
-
-        buildresult = Buildresult.find_hashed(project: name, view: 'summary', repository: current_repo['repository'], arch: current_repo['arch']).
-                        get('result').
-                        get('summary')
-
-        buildresult.elements('statuscount') do |status_count|
+        result.get('summary').elements('statuscount') do |status_count|
           if status_count['code'].in?(['excluded', 'broken', 'failed', 'unresolvable', 'succeeded', 'excluded', 'disabled'])
             current_repo[:final] += status_count['count'].to_i
           else
