@@ -43,21 +43,18 @@ class StagingProject < Project
     @building_repositories = []
 
     buildresult.elements('result') do |result|
-      building = false
-      if !['published', 'unpublished'].include?(result['state']) || result['dirty'] == 'true'
-        building = true
-      end
+      building = ['published', 'unpublished'].exclude?(result['state']) || result['dirty'] == 'true'
 
       result.elements('status') do |status|
         code = status.get('code')
 
-        if ['broken', 'failed'].include?(code) || (code == 'unresolvable' && !building)
-          @broken_packages << { 'package'    => status['package'],
-                                'project'    => name,
-                                'state'      => code,
-                                'details'    => status['details'],
-                                'repository' => result['repository'],
-                                'arch'       => result['arch'] }
+        if code.in?(['broken', 'failed']) || (code == 'unresolvable' && !building)
+          @broken_packages << { package:    status['package'],
+                                project:    name,
+                                state:      code,
+                                details:    status['details'],
+                                repository: result['repository'],
+                                arch:       result['arch'] }.with_indifferent_access
         end
       end
 
@@ -67,12 +64,15 @@ class StagingProject < Project
         current_repo[:tobuild] = 0
         current_repo[:final] = 0
 
-        buildresult = Buildresult.find_hashed(project: name, view: 'summary', repository: current_repo['repository'], arch: current_repo['arch']).get('result').get('summary')
-        buildresult.elements('statuscount') do |sc|
-          if ['excluded', 'broken', 'failed', 'unresolvable', 'succeeded', 'excluded', 'disabled'].include?(sc['code'])
-            current_repo[:final] += sc['count'].to_i
+        buildresult = Buildresult.find_hashed(project: name, view: 'summary', repository: current_repo['repository'], arch: current_repo['arch']).
+                        get('result').
+                        get('summary')
+
+        buildresult.elements('statuscount') do |status_count|
+          if status_count['code'].in?(['excluded', 'broken', 'failed', 'unresolvable', 'succeeded', 'excluded', 'disabled'])
+            current_repo[:final] += status_count['count'].to_i
           else
-            current_repo[:tobuild] += sc['count'].to_i
+            current_repo[:tobuild] += status_count['count'].to_i
           end
         end
 
@@ -80,9 +80,7 @@ class StagingProject < Project
       end
     end
 
-    if @building_repositories.present?
-      @broken_packages = @broken_packages.reject { |p| p['state'] == 'unresolvable' }
-    end
+    @broken_packages.reject! { |p| p['state'] == 'unresolvable' } if @building_repositories.present?
   end
 
   # TODO: This should be an association to the review model
