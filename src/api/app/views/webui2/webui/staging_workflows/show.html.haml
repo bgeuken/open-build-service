@@ -23,7 +23,9 @@
                   %br
                   = progress(staging_project)
                 %td
-                  = render partial: 'packages_list', locals: { project: staging_project }
+                  - staging_project.classified_requests.each do |request|
+                    = link_to(request.package, request_path(request.number))
+                    ,
                 %td.broken-packages
                   = render partial: 'problems', locals: { project: staging_project }
   .col-xl-2
