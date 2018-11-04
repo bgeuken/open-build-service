@@ -9,6 +9,19 @@ class StagingProject < Project
     requests_to_review - staged_requests
   end
 
+  def classified_requests
+    (requests_to_review + staged_requests).uniq.map { |request|
+      {
+        number:          request.number,
+        state:           request.state,
+        package:         request.first_target_package,
+        request_type:    request.bs_request_actions.first.type,
+        missing_reviews: missing_reviews.select { |review| review.request == request.number },
+        tracked:         requests_to_review.include?(request)
+      }
+    }.sort_by { |request| request[:package] }
+  end
+
   # The difference between staged requests and requests to review is that staged requests are assigned to the staging project.
   # The requests to review are requests which are not related to the staging project (unless they are also staged).
   # They simply need a review from the maintainers of the staging project.
