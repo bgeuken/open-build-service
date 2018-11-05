@@ -24,7 +24,7 @@
                   = progress(staging_project)
                 %td
                   - staging_project.classified_requests.each do |request|
-                    = link_to(request.package, request_path(request.number))
+                    = link_to(request[:package], request_path(request[:number]))
                     ,
                 %td.broken-packages
                   = render partial: 'problems', locals: { project: staging_project }
