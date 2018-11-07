@@ -22,9 +22,18 @@ module Webui::StagingWorkflowHelper
   end
 
   def testing_progress(staging_project)
-    # TODO: Once the following PR is merged, rebase on master and use the status API instead of directly checking openQA
-    #       https://github.com/openSUSE/open-build-service/pull/6119
-    0
+    notdone = 0
+    allchecks = 0
+
+    # FIXME (after sprint): Refactor code (including status report code) to do this via rails sql query methods
+    # FIXME: Solve the eager loading issue
+    staging_project.status_reports.each do |report|
+      notdone += report.checks.where(state: 'pending').count
+      allchecks += report.checks.count + report.missing_checks.count
+    end
+
+    return 100 if allchecks == 0
+    100 - notdone * 100 / allchecks
   end
 
   def progress(staging_project)

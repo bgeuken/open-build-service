@@ -108,12 +108,6 @@ module ObsFactory
       checks.select { |check| check.failed? }
     end
 
-    # TODO: Check if this is what we need for the review percentage
-#   x = missing_reviews.map(&:number)
-#   requests.select do |req|
-#     x.inlcude?(req.number)
-#   end
-
     # return a percentage counting the reviewed requests / total requests
     def review_percentage
       total = classified_requests.size

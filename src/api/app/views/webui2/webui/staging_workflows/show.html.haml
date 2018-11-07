@@ -13,7 +13,7 @@
               %th Requests
               %th Problems
           %tbody
-            - @staging_workflow.staging_projects.each do |staging_project|
+            - @staging_workflow.staging_projects.includes(:staged_requests).each do |staging_project|
               %tr
                 %td.text-center
                   - # TODO: Make this a link
@@ -23,9 +23,13 @@
                   %br
                   = progress(staging_project)
                 %td
-                  - staging_project.classified_requests.each do |request|
-                    = link_to(request[:package], request_path(request[:number]))
-                    ,
+                  - if staging_project.classified_requests.count == 0
+                    None
+                  - else
+                    - # FIXME: Only show a subset of the requests and add a 'more' option for showing the rest
+                    = staging_project.classified_requests.map do |request|
+                      - link_to(request[:package], request_show_path(request[:number]))
+                    - end.join(', ').html_safe
                 %td.broken-packages
                   = render partial: 'problems', locals: { project: staging_project }
   .col-xl-2

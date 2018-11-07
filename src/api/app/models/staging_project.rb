@@ -2,6 +2,7 @@
 class StagingProject < Project
   # TODO: Make sure that we aren't fetching those requests over and over again when using this association
   has_many :staged_requests, class_name: 'BsRequest', foreign_key: :staging_project_id
+  has_many :status_reports, through: :staged_requests
   belongs_to :staging_workflow, inverse_of: :staging_projects
 
 
@@ -10,7 +11,7 @@ class StagingProject < Project
   end
 
   def classified_requests
-    (requests_to_review + staged_requests).uniq.map { |request|
+    (requests_to_review + staged_requests.includes(:reviews)).uniq.map { |request|
       {
         number:          request.number,
         state:           request.state,
