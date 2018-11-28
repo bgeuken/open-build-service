@@ -1,0 +1,156 @@
+- @pagetitle = "Status of #{@project}"
+- metarobots = 'noindex'
+- project_bread_crumb 'Status'
+
+
+.card
+  = render partial: 'tabs', locals: { project: @project }
+
+  .card-body
+    %h3
+      = @pagetitle
+
+    - comments_to_clear = []
+
+    = form_tag(project_status_path, method: :get) do
+      = hidden_field_tag(:project, @project.name)
+      = hidden_field_tag(:limit_to_fails, 'false', id: 'fails_hidden')
+      = hidden_field_tag(:include_versions, 'false', id: 'versions_hidden')
+      - if @develprojects.size > 2
+        .form-group
+          = label_tag(:filter_devel, 'Devel project:')
+          .col-sm-10
+            = select_tag(:filter_devel, options_for_select(@develprojects, @current_develproject), class: 'form-control')
+      .custom-control.custom-checkbox
+        = check_box_tag(:ignore_pending, true, @ignore_pending, class: 'custom-control-input')
+        = label_tag(:ignore_pending, "Ignore packages with pending requests to #{@project.name}", class: 'custom-control-label')
+      .custom-control.custom-checkbox
+        = check_box_tag(:limit_to_fails, true, @limit_to_fails, class: 'custom-control-input')
+        = label_tag(:limit_to_fails, 'Limit to currently failing packages', class: 'custom-control-label')
+      .custom-control.custom-checkbox
+        = check_box_tag(:include_versions, true, @include_versions, class: 'custom-control-input')
+        = label_tag(:include_versions, 'Include version updates', class: 'custom-control-label')
+      = submit_tag('Filter results', class: 'btn btn-sm btn-primary px-4 mt-2')
+
+    - if @packages.present?
+      .mt-4
+        %p
+          Displaying #{@packages.size} packages that need handling, including:
+          #{@packages.count { |p| p['firstfail'].to_i > 0 }} not building,
+          #{@packages.count { |p| !p['problems'].empty? }} with a diff in the devel project,
+          #{@packages.count { |p| !p['requests_to'].empty? || !p['requests_from'].empty? }} with a pending request.
+
+        - show_devel_project = @packages.any? { |p| p['develproject'].present? }
+
+        %table.responsive.table.table-striped.table-bordered.w-100#status_table
+          %thead
+            %tr
+              %th
+                Name
+              - if show_devel_project
+                %th
+                  Devel project
+              %th.w-75
+                Summary
+          %tbody
+            - @packages.each do |p|
+              :ruby
+                outs = []
+                icon = "ok"
+                sortkey = nil
+
+                if p['requests_from'].empty?
+                  p['problems'].sort.each do |c|
+                    if c == 'different_changes'
+                      age = distance_of_time_in_words_to_now(p['develmtime'].to_i)
+                      outs << link_to("Different changes in devel project (since #{age})",
+                                      package_rdiff_path(project: p['develproject'], package: p['develpackage'], oproject: @project.name, opackage: p['name']))
+                      sortkey = "5-changes-#{p['develmtime']}-#{p['name']}"
+                      icon = "changes"
+                    elsif c == 'different_sources'
+                      age = distance_of_time_in_words_to_now(p['develmtime'].to_i)
+                      outs << link_to("Different sources in devel project (since #{age})", package_rdiff_path(project: p['develproject'], package: p['develpackage'],
+                                                                                                              oproject: @project.name, opackage: p['name']))
+                      sortkey = "6-changes-#{p['develmtime']}-" + p['name']
+                      icon = "changes"
+                    elsif c == 'diff_against_link'
+                      outs << link_to("Linked package is different", package_rdiff_path(oproject: p['lproject'], opackage: p['lpackage'],
+                                                                                        project: @project.name, package: p['name']))
+                      sortkey = "7-changes" + p['name']
+                      icon = "changes"
+                    elsif c =~ /^error-/
+                      outs << link_to(c[6..-1], package_show_path(project: p['develproject'], package: p['develpackage']))
+                      sortkey = "1-problem-" + p['name']
+                      icon = "error"
+                    elsif c == 'currently_declined'
+                      outs << link_to("Current sources were declined: request #{p['currently_declined']}",
+                                      request_show_path(number: p['currently_declined']))
+                      sortkey = "2-declines-" + p['name']
+                      icon = "error"
+                    else
+                      outs << link_to(c, package_show_path(project: p['develproject'], package: p['develpackage']))
+                      sortkey = "1-changes" + p['name']
+                      icon = "error"
+                    end
+                  end
+                end
+                p['requests_to'].each do |number|
+                  outs.unshift(("Request %s to %s" % [link_to(number, request_show_path(number: number)), h(p['develproject'])]).html_safe)
+                  icon = "changes"
+                  sortkey = "3-request%06d-%s" % [ 999999 - number, p['name']]
+                end
+                p['requests_from'].each do |number|
+                  outs.unshift(("Request %s to %s" % [link_to(number, request_show_path(number: number)), h(@project.name)]).html_safe)
+                  icon = "changes"
+                  sortkey = "2-drequest%06d-%s" % [ 999999 - number, p['name']]
+                end
+                # ignore the upstream version if there are already changes pending
+                if p['upstream_version'] && sortkey.nil?
+                  if p['upstream_url']
+                    outs << "New upstream version " + link_to(p['upstream_version'], p['upstream_url']) + " available"
+                  else
+                    outs << "New upstream version #{p['upstream_version']} available"
+                  end
+                  sortkey = "8-outdated-" + p['name']
+                end
+                if p['firstfail']
+                  outs.unshift(link_to("Fails", package_live_build_log_path(arch: h(p['failedarch']), repository: h(p['failedrepo']),
+                                                                            project: h(@project.name), package: h(p['name']))).html_safe +
+                  " since #{distance_of_time_in_words_to_now(p['firstfail'].to_i)}: " +
+                  content_tag(:span, show_status_comment(p['failedcomment'], p['name'], p['firstfail'], comments_to_clear),
+                              id: valid_xml_id('comment_' + p['name'])))
+                  icon = "error"
+                  sortkey = '1-fails-%010d-%s' % [ Time.now.to_i - p['firstfail'], p['name'] ]
+                else
+                  outs << content_tag(:span, show_status_comment(p['failedcomment'], p['name'], p['firstfail'], comments_to_clear),
+                                      id: valid_xml_id('comment_' + p['name']))
+                end
+                unless sortkey
+                  sortkey = "9-ok-" + p['name']
+                end
+
+              %tr
+                %td.nowrap
+                  - if icon == "error"
+                    %i.fa.fa-exclamation-circle.text-danger{ title: 'Error' }
+                  - elsif icon == "ok"
+                    %i.fa.fa-check-circle.text-success{ title: 'Ok' }
+                  - else
+                    %i.fa.fa-info-circle.text-info{ title: 'Info' }
+                  = link_to(p['name'], package_show_path(project: @project.name, package: p['name']))
+                - if show_devel_project
+                  %td
+                    - if p['develproject']
+                      = link_to(p['develproject'], package_show_path(project: p['develproject'], package: p['name']))
+                %td
+                  %span.d-none= sortkey
+                  - outs.each do |out|
+                    = out
+                    %br
+
+  - content_for :ready_function do
+    $('#status_table').dataTable({ 'iDisplayLength': 50, responsive: true });
+
+- if User.current.can_modify?(@project) && !comments_to_clear.empty?
+  = link_to('Clear all comments of not failing packages (%s)' % comments_to_clear.join(','),
+    action: :clear_failed_comment, project: @project.name, package: comments_to_clear)

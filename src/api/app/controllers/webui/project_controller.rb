@@ -600,6 +600,7 @@ class Webui::ProjectController < Webui::WebuiController
 
   def edit_comment_form
     check_ajax
+    switch_to_webui2
   end
 
   def edit_comment
@@ -652,6 +653,8 @@ class Webui::ProjectController < Webui::WebuiController
       end
       format.html
     end
+
+    switch_to_webui2
   end
 
   def maintained_projects
