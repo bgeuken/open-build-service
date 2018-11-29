@@ -59,6 +59,17 @@
                 icon = "ok"
                 sortkey = nil
 
+                p['requests_from'].each do |number|
+                  outs << ("Request %s to %s" % [link_to(number, request_show_path(number: number)), h(@project.name)]).html_safe
+                  icon = "changes"
+                  sortkey = "2-drequest%06d-%s" % [ 999999 - number, p['name']]
+                end
+                p['requests_to'].each do |number|
+                  outs << ("Request %s to %s" % [link_to(number, request_show_path(number: number)), h(p['develproject'])]).html_safe
+                  icon = "changes"
+                  sortkey = "3-request%06d-%s" % [ 999999 - number, p['name']]
+                end
+
                 if p['requests_from'].empty?
                   p['problems'].sort.each do |c|
                     if c == 'different_changes'
@@ -93,16 +104,6 @@
                       icon = "error"
                     end
                   end
-                end
-                p['requests_to'].each do |number|
-                  outs.unshift(("Request %s to %s" % [link_to(number, request_show_path(number: number)), h(p['develproject'])]).html_safe)
-                  icon = "changes"
-                  sortkey = "3-request%06d-%s" % [ 999999 - number, p['name']]
-                end
-                p['requests_from'].each do |number|
-                  outs.unshift(("Request %s to %s" % [link_to(number, request_show_path(number: number)), h(@project.name)]).html_safe)
-                  icon = "changes"
-                  sortkey = "2-drequest%06d-%s" % [ 999999 - number, p['name']]
                 end
                 # ignore the upstream version if there are already changes pending
                 if p['upstream_version'] && sortkey.nil?
