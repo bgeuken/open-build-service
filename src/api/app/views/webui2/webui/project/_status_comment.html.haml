@@ -1,0 +1,20 @@
+- comment_id = valid_xml_id("comment_#{package['name']}")
+- comment_edit_id = valid_xml_id("comment_edit_#{package['name']}")
+- if package['failedcomment']
+  = h(package['failedcomment'])
+  - if User.current.can_modify?(@project.api_obj)
+    - if package['firstfail']
+      = link_to(edit_comment_form_path(project: @project, package: package['name'], update: comment_edit_id, comment: package['failedcomment']), remote: true) do
+        %i.fas.fa-edit.text-secondary
+    - else
+      = link_to(clear_failed_comment_path(project: @project, package: package['name'], update: comment_id), remote: true) do
+        %i.fas.fa-times-circle.text-danger
+
+- elsif package['firstfail']
+  %span.unknown_failure
+    Unknown build failure
+    - if User.current.can_modify?(project.api_obj)
+      = link_to(edit_comment_form_path(project: @project, package: package['name'], update: comment_edit_id, comment: ''), remote: true) do
+        %i.fas.fa-edit.text-secondary
+
+%span{ id: comment_edit_id }

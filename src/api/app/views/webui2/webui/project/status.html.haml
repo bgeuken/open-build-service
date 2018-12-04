@@ -122,6 +122,8 @@
                   " since #{distance_of_time_in_words_to_now(p['firstfail'].to_i)}")
                   icon = "error"
                   sortkey = '1-fails-%010d-%s' % [ Time.now.to_i - p['firstfail'], p['name'] ]
+                elsif p['failedcomment'] && User.current.can_modify?(@project.api_obj)
+                  comments_to_clear << p['failedcomment']
                 end
                 unless sortkey
                   sortkey = "9-ok-" + p['name']
@@ -146,8 +148,8 @@
                     = out
                     %br
                 %td
-                  %span{ id: valid_xml_id('comment_' + p['name']) }
-                    = show_status_comment(p['failedcomment'], p['name'], p['firstfail'], comments_to_clear)
+                  %span{ id: valid_xml_id("comment_#{p['name']}") }
+                    = render partial: 'status_comment', locals: { package: p, project: @project }
 
   - content_for :ready_function do
     $('#status_table').dataTable({ 'iDisplayLength': 50, responsive: true, 'columnDefs': [ { 'width': '20%', 'targets': 0 } ] });

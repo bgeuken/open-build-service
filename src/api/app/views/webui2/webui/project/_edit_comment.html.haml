@@ -1,0 +1,8 @@
+%div
+
+  - if @error
+    %i.fa.fa-exclamation-triangle.text-warning
+    = @error
+
+  = show_status_comment(@comment, @package, true, [])
+
