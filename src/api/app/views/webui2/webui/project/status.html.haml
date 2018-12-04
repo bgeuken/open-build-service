@@ -50,8 +50,10 @@
               - if show_devel_project
                 %th
                   Devel project
-              %th.w-75
+              %th
                 Summary
+              %th
+                Comments
           %tbody
             - @packages.each do |p|
               :ruby
@@ -117,21 +119,16 @@
                 if p['firstfail']
                   outs.unshift(link_to("Fails", package_live_build_log_path(arch: h(p['failedarch']), repository: h(p['failedrepo']),
                                                                             project: h(@project.name), package: h(p['name']))).html_safe +
-                  " since #{distance_of_time_in_words_to_now(p['firstfail'].to_i)}: " +
-                  content_tag(:span, show_status_comment(p['failedcomment'], p['name'], p['firstfail'], comments_to_clear),
-                              id: valid_xml_id('comment_' + p['name'])))
+                  " since #{distance_of_time_in_words_to_now(p['firstfail'].to_i)}")
                   icon = "error"
                   sortkey = '1-fails-%010d-%s' % [ Time.now.to_i - p['firstfail'], p['name'] ]
-                else
-                  outs << content_tag(:span, show_status_comment(p['failedcomment'], p['name'], p['firstfail'], comments_to_clear),
-                                      id: valid_xml_id('comment_' + p['name']))
                 end
                 unless sortkey
                   sortkey = "9-ok-" + p['name']
                 end
 
               %tr
-                %td.nowrap
+                %td.nowrap.text-truncate
                   - if icon == "error"
                     %i.fa.fa-exclamation-circle.text-danger{ title: 'Error' }
                   - elsif icon == "ok"
@@ -148,6 +145,9 @@
                   - outs.each do |out|
                     = out
                     %br
+                %td
+                  %span{ id: valid_xml_id('comment_' + p['name']) }
+                    = show_status_comment(p['failedcomment'], p['name'], p['firstfail'], comments_to_clear)
 
   - content_for :ready_function do
     $('#status_table').dataTable({ 'iDisplayLength': 50, responsive: true });
