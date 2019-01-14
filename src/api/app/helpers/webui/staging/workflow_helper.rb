@@ -43,6 +43,35 @@ module Webui::Staging::WorkflowHelper
     end
   end
 
+  def reviewers_gravatar(request)
+    missing_reviews = request[:missing_reviews]
+    image_tags = []
+    missing_reviews.each do |review|
+      case review[:review_type]
+      when 'by_group'
+        group = Group.find_by_title(review[:by])
+        image_tags << webui2_user_or_group_image_tag(user_or_group: group, title: review[:by], size: 20)
+      when 'by_user'
+        user = User.find_by_login(review[:by])
+        image_tags << webui2_user_or_group_image_tag(user_or_group: user, title: review[:by], size: 20)
+      end
+    end
+    image_tags
+  end
+
+  def create_request_links(request)
+    css = 'ready'
+    css = 'review' if request[:missing_reviews].present?
+    css = 'obsolete' if request[:state].in?(BsRequest::OBSOLETE_STATES)
+    link_content = [request[:package]]
+    link_content << reviewers_gravatar(request) if request[:missing_reviews].present?
+    content_tag(:span, class: "badge state-#{css}") do
+      link_to(request_show_path(request[:number]), class: 'request') do
+        safe_join(link_content)
+      end
+    end
+  end
+
   def requests(staging_project)
     number_of_requests = staging_project.classified_requests.size
 
@@ -50,13 +79,7 @@ module Webui::Staging::WorkflowHelper
 
     requests_visible_by_default = 10
     requests_links = staging_project.classified_requests.map do |request|
-      css = 'ready'
-      css = 'review' if request[:missing_reviews].present?
-      css = 'obsolete' if request[:state].in?(BsRequest::OBSOLETE_STATES)
-
-      link_to(request_show_path(request[:number]), class: 'request') do
-        content_tag(:span, request[:package], class: "badge state-#{css}")
-      end
+      create_request_links(request)
     end
 
     if number_of_requests <= requests_visible_by_default
