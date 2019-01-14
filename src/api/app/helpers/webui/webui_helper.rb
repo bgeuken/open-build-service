@@ -417,5 +417,16 @@ module Webui::WebuiHelper
 
     link_to(label, path, class: html_class)
   end
+
+  def webui2_user_or_group_image_tag(user_or_group:, css_class: nil, alt: nil, title: nil, size: 500)
+    name = user_or_group.is_a?(Group) ? "#{user_or_group.title}'s avatar'" : "#{user_or_group.name}'s avatar"
+    alt ||= (user_or_group ? "#{name}'s avatar" : 'Avatar')
+    url = if user_or_group.try(:email) && ::Configuration.gravatar
+            "https://www.gravatar.com/avatar/#{Digest::MD5.hexdigest(user_or_group.email.downcase)}?s=#{size}&d=wavatar"
+          else
+            'default_face.png'
+          end
+    image_tag(url, alt: alt, class: css_class, width: '100%', title: title)
+  end
 end
 # rubocop:enable Metrics/ModuleLength
