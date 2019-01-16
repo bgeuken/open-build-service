@@ -49,12 +49,11 @@ module Webui::Staging::WorkflowHelper
     missing_reviews.each do |review|
       case review[:review_type]
       when 'by_group'
-        group = Group.find_by_title(review[:by])
-        image_tags << webui2_user_or_group_image_tag(user_or_group: group, title: review[:by], size: 20)
+        object = Group.find_by_title(review[:by])
       when 'by_user'
-        user = User.find_by_login(review[:by])
-        image_tags << webui2_user_or_group_image_tag(user_or_group: user, title: review[:by], size: 20)
+        object = User.find_by_login(review[:by])
       end
+      image_tags << image_tag_for(object, size: 20)
     end
     image_tags
   end
