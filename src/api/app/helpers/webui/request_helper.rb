@@ -129,4 +129,13 @@ module Webui::RequestHelper
     return "#{review[:by_project]} / #{review[:by_package]}" if review[:by_package]
     review[:by_user] || review[:by_group] || review[:by_project]
   end
+
+  def diff_data(action_type, sourcediff)
+    diff = (action_type == :delete ? sourcediff['old'] : sourcediff['new'])
+    diff.slice('project', 'package', 'rev').with_indifferent_access
+  end
+
+  def diff_label(diff)
+    "#{diff['project']} / #{diff['package']} (rev #{diff['rev']})"
+  end
 end
