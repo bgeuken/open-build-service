@@ -1,4 +1,7 @@
 module Webui::RequestHelper
+  include Webui::UserHelper
+  include Webui::WebuiHelper
+
   STATE_COLORS = {
     'new' => 'green',
     'accepted' => 'green',
@@ -137,5 +140,39 @@ module Webui::RequestHelper
 
   def diff_label(diff)
     "#{diff['project']} / #{diff['package']} (rev #{diff['rev']})"
+  end
+
+  def request_action_header(action, creator)
+    links = {
+      target_container: project_or_package_link(project: action[:tprj], package: action[:tpkg]),
+      target_repo: nil
+    }
+    source_project_hash = { project: action[:sprj], package: action[:spkg]}
+
+    header = case action[:type].to_sym
+             when :delete
+               if action[:trepo]
+                 links[:target_repo] = link_to(action[:trepo], repository_index_path(project: action[:tprj], repository: action[:trepo]))
+               end
+               'Delete %{target_repo}%{target_container}'
+             when :add_role, :set_bugowner
+               links[:requester] = requester_str(creator, action[:user], action[:group])
+               links[:creator] = user_with_realname_and_icon(creator)
+               links[:task] = creator_intentions(action[:role])
+               '%{creator} wants %{requester} to %{task} for %{target_container}'
+             when :change_devel
+               'Set the devel project to %{source_container} for %{target_container}'
+             when :maintenance_incident
+               source_project_hash[:homeproject] = creator
+               'Submit update from %{source_container} to %{target_container}'
+             when :maintenance_release
+               'Release %{source_container} to %{target_container}'
+             end
+
+    links[:source_container] = project_or_package_link(source_project_hash)
+
+    content_tag(:b) do
+      header.html_safe % links
+    end
   end
 end
