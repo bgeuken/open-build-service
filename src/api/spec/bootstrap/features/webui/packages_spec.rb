@@ -60,7 +60,7 @@ RSpec.feature 'Bootstrap_Packages', type: :feature, js: true, vcr: true do
   scenario 'deleting a package' do
     login user
     visit package_show_path(package: package, project: user.home_project)
-    click_link('Delete package')
+    find('Delete package').click
 
     expect(find('#delete-modal')).to have_text('Do you really want to delete this package?')
     within('#delete-modal .modal-footer') do
