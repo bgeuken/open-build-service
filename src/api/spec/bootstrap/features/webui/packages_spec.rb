@@ -58,8 +58,6 @@ RSpec.feature 'Bootstrap_Packages', type: :feature, js: true, vcr: true do
   end
 
   scenario 'deleting a package' do
-    skip('FIXME: This test is flickering hard.')
-
     login user
     visit package_show_path(package: package, project: user.home_project)
     click_link('Delete package')
@@ -69,7 +67,7 @@ RSpec.feature 'Bootstrap_Packages', type: :feature, js: true, vcr: true do
       click_button('Delete')
     end
 
-    expect(find('#flash-messages')).to have_text('Package was successfully removed.')
+    expect(page).to have_css('#flash-messages', text: 'Package was successfully removed.')
   end
 
   scenario 'requesting package deletion' do
@@ -90,8 +88,6 @@ RSpec.feature 'Bootstrap_Packages', type: :feature, js: true, vcr: true do
   end
 
   scenario "changing the package's devel project" do
-    skip('FIXME: This test is flickering hard.')
-
     login user
 
     visit package_show_path(package: package_with_develpackage, project: user.home_project)
@@ -104,7 +100,6 @@ RSpec.feature 'Bootstrap_Packages', type: :feature, js: true, vcr: true do
       click_button('Accept')
     end
 
-    find('#flash-messages', visible: false)
     request = BsRequest.where(description: 'Hey, why not?', creator: user.login, state: 'review')
     expect(request).to exist
     expect(page).to have_current_path("/request/show/#{request.first.number}")
