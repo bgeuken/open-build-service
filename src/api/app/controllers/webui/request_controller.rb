@@ -91,9 +91,8 @@ class Webui::RequestController < Webui::WebuiController
     # retrieve a list of all package maintainers that are assigned to at least one target package
     @package_maintainers = target_package_maintainers
 
-    # search for a project, where the user is not a package maintainer but a project maintainer and show
-    # a hint if that package has some package maintainers (issue#1970)
-    @show_project_maintainer_hint = (!@package_maintainers.empty? && !@package_maintainers.include?(User.current) && any_project_maintained_by_current_user?)
+    @show_project_maintainer_hint = ([User.current, nil].exclude?(@package_maintainers) &&
+                                     any_project_maintained_by_current_user?)
 
     switch_to_webui2
   end
