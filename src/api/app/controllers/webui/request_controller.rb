@@ -270,9 +270,9 @@ class Webui::RequestController < Webui::WebuiController
   private
 
   def any_project_maintained_by_current_user?
-    projects = @bs_request.bs_request_actions.select(:target_project).distinct.pluck(:target_project)
-    maintainer_role = Role.find_by_title('maintainer')
-    projects.any? { |project| Project.find_by_name(project).user_has_role?(User.current, maintainer_role) }
+    @bs_request.target_project_objects.select(:id).any? do |project|
+      project.user_has_role?(User.current, Role.find_by_title('maintainer'))
+    end
   end
 
   def new_state
@@ -301,9 +301,8 @@ class Webui::RequestController < Webui::WebuiController
   end
 
   def target_package_maintainers
-    distinct_bs_request_actions = @bs_request.bs_request_actions.select(:target_project, :target_package).distinct
-    distinct_bs_request_actions.flat_map do |action|
-      Package.find_by_project_and_name(action.target_project, action.target_package).try(:maintainers)
+    @bs_request.target_project_objects.select(:id).map do |package|
+      package.try(:maintainers)
     end.compact.uniq
   end
 
