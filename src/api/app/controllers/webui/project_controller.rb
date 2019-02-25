@@ -91,6 +91,11 @@ class Webui::ProjectController < Webui::WebuiController
     parent = @project.parent
     @parent_name = parent.name unless parent.nil?
     @siblings = @project.siblingprojects
+
+    respond_to do |format|
+      format.html
+      format.json { render json: ProjectDatatable.new(params, view_context: view_context) }
+    end
     switch_to_webui2
   end
 

@@ -1,11 +1,12 @@
 %h3 #{table_title.pluralize} of #{project}
-%table.responsive.table.table-sm.table-striped.table-bordered.projects-table
+%table.responsive.table.table-sm.table-striped.table-bordered.projects-table{ data: { source: project_subprojects_path(project, format: :json) }, id: table_title }
   %thead
     %tr
       %th= table_title
       %th Title
   %tbody
-    - projects.each do |project|
+    -# projects.each do |project|
       %tr
         %td.project_name= link_to(word_break(project.name), project_show_path(project))
         %td.project_title= word_break(project.title)
+
