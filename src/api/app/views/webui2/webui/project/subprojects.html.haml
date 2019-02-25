@@ -25,6 +25,3 @@
           = render partial: 'projects_table', locals: { table_title: 'Sibling Project', project: @project, projects: @siblings }
 
 = render partial: 'new_project_modal', locals: { project: @project, configuration: @configuration }
-
-:javascript
-  initializeDataTable('.projects-table');
