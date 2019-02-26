@@ -1,3 +1,4 @@
+require_relative 'features/custom_forms_helper'
 
 Capybara.default_max_wait_time = 6
 Capybara.save_path = Rails.root.join('tmp', 'capybara')
@@ -45,6 +46,9 @@ end
 
 # Automatically save the page a test fails
 RSpec.configure do |config|
+  config.include(CustomFormsHelper, type: :feature)
+  config.extend(CustomFormsHelper, type: :feature)
+
   config.before(:suite) do
     FileUtils.rm_rf(File.join(Capybara.save_path, '.'), secure: true)
   end
