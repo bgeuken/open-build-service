@@ -136,6 +136,41 @@ namespace :dev do
       end
     end
   end
+
+  namespace :staging do
+    task data: :environment do
+      unless Rails.env.development?
+        puts "You are running this rake task in #{Rails.env} environment."
+        puts 'Please only run this task with RAILS_ENV=development'
+        puts 'otherwise it will destroy your database data.'
+        return
+      end
+
+      require 'factory_bot'
+      include FactoryBot::Syntax::Methods
+      timestamp = Time.now.to_i
+      maintainer = create(:confirmed_user, login: "maintainer_#{timestamp}")
+      User.current = maintainer
+      requester = create(:confirmed_user, login: "requester_#{timestamp}")
+      managers_group = create(:group, title: "managers_group_#{timestamp}")
+      staging_workflow = create(:staging_workflow_with_staging_projects, project: maintainer.home_project, managers_group: managers_group)
+      staging_workflow.managers_group.add_user(maintainer)
+      source_project = create(:project, name: "source_project_#{timestamp}")
+      target_package = create(:package, name: "target_package_#{timestamp}", project: maintainer.home_project)
+      source_package = create(:package, name: "source_package_#{timestamp}", project: source_project)
+      request = create(:bs_request_with_submit_action,
+        state: :new,
+        creator: requester,
+        target_package: target_package,
+        source_package: source_package,
+        description: 'BsRequest 1',
+        staging_project: staging_workflow.staging_projects.first)
+      request.reviews.each { |review| review.change_state(:accepted, 'Accepted') }
+
+      puts "**** Created staging workflow project: /staging_workflows/#{staging_workflow.id} ****"
+    end
+  end
+
   namespace :development_testdata do
     task create: :environment do
       unless Rails.env.development?
