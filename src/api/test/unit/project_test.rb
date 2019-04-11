@@ -359,7 +359,7 @@ class ProjectTest < ActiveSupport::TestCase
     repo_2 = Repository.create(name: 'repo_2', db_project_id: subproject.id)
     repo_1.release_targets.create(trigger: 'maintenance', target_repository_id: repo_2.id)
 
-    package = subproject.packages.create(name: 'test2')
+    package = subproject.packages.create(name: 'test2.repo_1')
     package.flags.create(flag: :build, status: 'enable', repo: 'repo_1')
 
     Patchinfo.new.create_patchinfo('ABC:D', '_patchinfo', comment: 'patchinfo summary')

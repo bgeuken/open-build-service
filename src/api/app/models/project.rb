@@ -1406,6 +1406,7 @@ class Project < ApplicationRecord
       first_matching_build_target = package.flags.where(flag: :build, status: 'enable', repo: repo_name_to_project_name.keys).select(:repo).first
       next unless first_matching_build_target
       release_target_name = repo_name_to_project_name[first_matching_build_target]
+      next unless release_target_name
       # Let's silently hope that an incident newer introduces new (sub-)packages....
       release_targets_ng[release_target_name][:packages] << package
       package_count += 1
