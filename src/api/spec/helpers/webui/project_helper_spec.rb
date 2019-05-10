@@ -1,6 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe Webui::ProjectHelper, type: :helper do
+  describe '' do
+    let(:maintenance_project) { }
+    let(:maintenance_incident) { } # add flags
+
+
+    test pkgs
+    test reponame
+  end
+
   describe '#show_status_comment' do
     skip
   end
