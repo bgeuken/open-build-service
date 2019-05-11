@@ -68,18 +68,6 @@ module Event
       BsRequest.actions_summary(payload)
     end
 
-    def calculate_diff(a)
-      return if a['type'] != 'submit'
-      raise 'We need action_id' unless a['action_id']
-      action = BsRequestAction.find(a['action_id'])
-      return if Project.deleted?(action.source_project)
-      begin
-        action.sourcediff(view: nil, withissues: 0)
-      rescue BsRequestAction::Errors::DiffError
-        return # can't help
-      end
-    end
-
     def source_from_remote?
       payload['actions'].any? { |action| Project.unscoped.is_remote_project?(action['sourceproject'], true) }
     end
@@ -132,6 +120,18 @@ module Event
     end
 
     private
+
+    def calculate_diff(a)
+      return if a['type'] != 'submit'
+      raise 'We need action_id' unless a['action_id']
+      action = BsRequestAction.find(a['action_id'])
+      return if Project.deleted?(action.source_project)
+      begin
+        action.sourcediff(view: nil, withissues: 0)
+      rescue BsRequestAction::Errors::DiffError
+        return # can't help
+      end
+    end
 
     def find_watchers(project_key)
       project_names = payload['actions'].map { |action| action[project_key] }.uniq
