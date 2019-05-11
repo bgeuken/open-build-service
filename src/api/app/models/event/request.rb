@@ -121,10 +121,9 @@ module Event
 
     private
 
-    def calculate_diff(a)
-      return if a['type'] != 'submit'
-      raise 'We need action_id' unless a['action_id']
-      action = BsRequestAction.find(a['action_id'])
+    def calculate_diff(payload)
+      return if payload['type'] != 'submit'
+      action = BsRequestAction.find(payload['action_id'])
       return if Project.deleted?(action.source_project)
       begin
         action.sourcediff(view: nil, withissues: 0)
