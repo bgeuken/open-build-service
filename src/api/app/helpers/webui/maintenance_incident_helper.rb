@@ -81,12 +81,14 @@ module Webui::MaintenanceIncidentHelper
     end
   end
 
-  def release_targets_cell(incident)
-    target_repos = incident.target_repositories.joins(:project).select('repositories_target_repositories.name as name', 'projects.name as prj_name')
+  def release_target_repos(incident)
+    incident.target_repositories.joins(:project).select('repositories_target_repositories.name as name', 'projects.name as prj_name')
+  end
 
+  def release_targets_cell(incident)
     safe_join(
       [
-        target_repos.map do |target_repo|
+        release_target_repos.map do |target_repo|
           content_tag(:div) do
             safe_join(
               [
