@@ -659,15 +659,10 @@ class Webui::ProjectController < Webui::WebuiController
     @nr_of_problem_packages = @project.number_of_build_problems
   end
 
+  # difference -> first target of reach -> all release targets ...
   def load_releasetargets
-    @releasetargets = []
-    rts = ReleaseTarget.where(repository_id: @project.repositories)
-    return if rts.empty?
-    Rails.logger.debug rts.inspect
-    @project.repositories.each do |repository|
-      release_target = repository.release_targets.first
-      @releasetargets.push(release_target.repository.project.name + '/' + release_target.repository.name) if release_target
-    end
+    @releasetargets = @project.release_target_repos_and_projects.
+                        map { |release_target| "#{release_target.prj_name}/#{release_target.name}" }
   end
 
   def require_maintenance_project

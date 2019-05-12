@@ -1373,6 +1373,10 @@ class Project < ApplicationRecord
       where('release_targets.trigger = "maintenance"')
   end
 
+  def release_target_repos_and_projects
+    target_repositories.joins(:project).select('repositories_target_repositories.name as name', 'projects.name as prj_name')
+  end
+
   def self.source_path(project, file = nil, opts = {})
     path = "/source/#{URI.escape(project)}"
     path += "/#{URI.escape(file)}" if file.present?
