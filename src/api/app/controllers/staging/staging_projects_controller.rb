@@ -34,7 +34,17 @@ class Staging::StagingProjectsController < ApplicationController
   end
 
   def copy
-    authorize @main_project.staging
+    @project = Project.where(name: params[:staging_project_copy_name]).first_or_initialize
+    authorize @project, :create?
+
+    unless @project.new_record?
+      render_error(
+        status: 400,
+        errorcode: 'invalid_request',
+        message: 'Staging project can not be copied into an existing project.'
+      )
+      return
+    end
 
     StagingProjectCopyJob.perform_later(params[:staging_workflow_project], params[:staging_project_name], params[:staging_project_copy_name], User.session!.id)
     render_ok

@@ -115,6 +115,7 @@ RSpec.describe Staging::StagingProjectsController, type: :controller, vcr: true 
     let(:staging_workflow_project) { staging_workflow.project.name }
     let(:original_staging_project_name) { staging_workflow.staging_projects.first.name }
     let(:staging_project_copy_name) { "#{original_staging_project_name}-copy" }
+    let(:existingproject) { user.home_project }
     let(:params) do
       {
         staging_workflow_project: staging_workflow_project,
@@ -137,6 +138,11 @@ RSpec.describe Staging::StagingProjectsController, type: :controller, vcr: true 
                                                                                                            original_staging_project_name,
                                                                                                            staging_project_copy_name,
                                                                                                            user.id)
+    end
+
+    it 'does not allow to copy into an existing projects' do
+      post :copy, format: :xml, params: params.merge(staging_project_copy_name: existingproject.name)
+      expect(response).to have_http_status(:bad_request)
     end
   end
 
