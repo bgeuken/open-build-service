@@ -5,6 +5,8 @@ class Staging::StagingProjectsController < ApplicationController
 
   validate_action create: { method: :post, request: :staging_project }
 
+  after_action :verify_authorized, except: [:index, :show]
+
   def index
     if @main_project.staging
       @staging_workflow = @main_project.staging
