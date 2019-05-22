@@ -68,6 +68,7 @@ class EventTest < ActionDispatch::IntegrationTest
     assert_equal ['fredlibs'], users_for_event(e)
   end
 
+  # write rspec test
   test 'create request' do
     User.session = users(:Iggy)
     req = bs_requests(:submit_from_home_project)

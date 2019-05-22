@@ -27,7 +27,7 @@ RSpec.describe EventMailer, vcr: true do
       end
       # It is not possible to use the bs_request_action_submit factory as it creates the bs_request_action
       # in an after create hook which creates a wrong Event::RequestCreate object
-      let!(:bs_request) do
+      let(:bs_request) do
         create(:bs_request, bs_request_actions: [bs_request_action_submit])
       end
       let(:event) { Event::RequestCreate.first }
@@ -38,6 +38,7 @@ RSpec.describe EventMailer, vcr: true do
       context 'when source project does not exist' do
         before do
           login(receiver)
+          bs_request
           source_package.project.destroy
         end
 
