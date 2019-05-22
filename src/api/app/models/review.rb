@@ -54,14 +54,9 @@ class Review < ApplicationRecord
   before_validation :set_reviewable_association
   after_commit :update_cache
 
-  def validate_non_symmetric_assignment
-    return unless review_assigned_from && review_assigned_from == review_assigned_to
-
-    errors.add(
-      :review_id,
-      'assigned to review which is already assigned to this review'
-    )
-  end
+  validates :review_assigned_from, uniqueness: { scope: :review_assigned_to,
+                                                 message: 'assigned to review which is already assigned to this review',
+                                                 allow_nil: true }
 
   def validate_not_self_assigned
     return unless persisted? && id == review_id
