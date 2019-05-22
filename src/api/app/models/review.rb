@@ -81,7 +81,7 @@ class Review < ApplicationRecord
   end
 
   def accepted_at
-    if review_assigned_to && review_assigned_to.state == :accepted
+    if review_assigned_to.try(:state) == :accepted
       review_assigned_to.accepted_history_element.created_at
     elsif state == :accepted && !review_assigned_to
       accepted_history_element.created_at
@@ -89,7 +89,7 @@ class Review < ApplicationRecord
   end
 
   def declined_at
-    if review_assigned_to && review_assigned_to.state == :declined
+    if review_assigned_to.try(:state) == :declined
       review_assigned_to.declined_history_element.created_at
     elsif state == :declined && !review_assigned_to
       declined_history_element.created_at
